@@ -1,1 +1,1 @@
-Discord bot to show brackets for tournaments
+Discord bot to show brackets for tournaments (WIP)
