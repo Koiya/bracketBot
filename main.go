@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bracketBot/cmd"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"github.com/pelletier/go-toml"
@@ -8,6 +9,13 @@ import (
 	"os"
 	"os/signal"
 )
+
+//TODO
+//bracket
+// show bracket
+//participant
+// -add
+// -remove
 
 var (
 	s       *discordgo.Session
@@ -39,6 +47,13 @@ var (
 			// of the command.
 			Description: "Ping pong.",
 		},
+		{
+			Name: "pingtwo",
+			// All commands and options must have a description
+			// Commands/options without description will fail the registration
+			// of the command.
+			Description: "Ping pong.",
+		},
 	}
 	commandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
 		"ping": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
@@ -49,6 +64,7 @@ var (
 				},
 			})
 		},
+		"pingtwo": cmd.Ping(),
 	}
 )
 
