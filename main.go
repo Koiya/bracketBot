@@ -2,16 +2,20 @@ package main
 
 import (
 	"bracketBot/cmd"
+	"bracketBot/util"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
-	"github.com/pelletier/go-toml"
 	"log"
 	"os"
 	"os/signal"
 )
 
 //TODO
-//bracket
+// Get one tournament
+// Create Tournament
+// Update a Tournament
+// Delete a tournament(admin)
+//
 // show bracket
 //participant
 // -add
@@ -20,22 +24,17 @@ import (
 var (
 	s       *discordgo.Session
 	GuildID string
+	err     error
 )
 
 func init() {
-	config, err := toml.LoadFile("config.toml")
-	if err != nil {
-		fmt.Println("Error ", err.Error())
-		return
-	}
-	botToken := config.Get("Bot.token").(string)
-	GuildID = config.Get("Bot.guild_id").(string)
+	botToken := util.GetTOML("Bot.token")
+	GuildID = util.GetTOML("Bot.guild_id")
 	s, err = discordgo.New("Bot " + botToken)
 	if err != nil {
 		fmt.Println("Error creating Discord session,", err.Error())
 		return
 	}
-
 }
 
 var (
@@ -48,11 +47,11 @@ var (
 			Description: "Ping pong.",
 		},
 		{
-			Name: "pingtwo",
+			Name: "showalltournaments",
 			// All commands and options must have a description
 			// Commands/options without description will fail the registration
 			// of the command.
-			Description: "Ping pong.",
+			Description: "show all tournament",
 		},
 	}
 	commandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -64,7 +63,7 @@ var (
 				},
 			})
 		},
-		"pingtwo": cmd.Ping(),
+		"showalltournaments": cmd.ShowTournaments(),
 	}
 )
 
