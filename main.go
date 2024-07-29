@@ -46,24 +46,85 @@ var (
 			// of the command.
 			Description: "Ping pong.",
 		},
+
+		//Tournaments
 		{
-			Name: "showalltournaments",
-			// All commands and options must have a description
-			// Commands/options without description will fail the registration
-			// of the command.
+			Name:        "showalltournaments",
 			Description: "show all tournament",
+		},
+		{
+			Name:        "updatetournament",
+			Description: "Updates a tournament with options passed",
+		},
+
+		//Participants
+		{
+			Name:        "addparticipant",
+			Description: "Add a participant to a tournament",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "tourney-id",
+					Description: "Input ID of the tournament",
+					Required:    true,
+				},
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "name",
+					Description: "Name of the participant",
+					Required:    true,
+				},
+				{
+					Type:        discordgo.ApplicationCommandOptionInteger,
+					Name:        "seed",
+					Description: "Seeding of the participant",
+					Required:    false,
+				},
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "misc",
+					Description: "Description of the participant",
+					Required:    false,
+				},
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "email",
+					Description: "Email of the participant",
+					Required:    false,
+				},
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "username",
+					Description: "Challonge username of the participant",
+					Required:    false,
+				},
+			},
+		},
+		{
+			Name:        "removeparticipant",
+			Description: "Removes a participant from a tournament",
 		},
 	}
 	commandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
+
 		"ping": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+			var message string
+			if len(i.Member.Roles) == 0 {
+				message = "No roles!"
+			}
+			for _, value := range i.Member.Roles {
+				message += value + " "
+			}
 			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 				Type: discordgo.InteractionResponseChannelMessageWithSource,
 				Data: &discordgo.InteractionResponseData{
-					Content: "Pong",
+					Content: message,
 				},
 			})
 		},
-		"showalltournaments": cmd.ShowTournaments(),
+		"showalltournaments": cmd.ShowTournamentsCMD(),
+
+		"addparticipant": cmd.AddParticipantsCMD(),
 	}
 )
 

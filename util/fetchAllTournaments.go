@@ -8,13 +8,13 @@ import (
 	"net/http"
 )
 
-type DataWrapper struct {
+type AllTournamentWrapper struct {
 	Data []Info `json:"data"`
 }
 type Info struct {
-	Attributes Attributes `json:"attributes"`
+	Attributes AllTournamentAttributes `json:"attributes"`
 }
-type Attributes struct {
+type AllTournamentAttributes struct {
 	Name           string `json:"name"`
 	Game           string `json:"game_name"`
 	TournamentType string `json:"tournament_type"`
@@ -22,12 +22,6 @@ type Attributes struct {
 }
 
 func FetchAllTournaments() [4]string {
-	/*
-		data['tournament_type']
-		data['full_challonge_url']
-		data['game_name']
-
-	*/
 	var results [4]string
 	//Request to the API
 	client := &http.Client{}
@@ -47,8 +41,7 @@ func FetchAllTournaments() [4]string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	var data DataWrapper
-	//json.Unmarshal(body, &response)
+	var data AllTournamentWrapper
 	err = json.Unmarshal(body, &data)
 	if err != nil {
 		log.Fatal("Error", err.Error())
