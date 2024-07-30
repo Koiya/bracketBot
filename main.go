@@ -122,9 +122,8 @@ var (
 				},
 			})
 		},
-		"showalltournaments": cmd.ShowTournamentsCMD(),
-
-		"addparticipant": cmd.AddParticipantsCMD(),
+		"showalltournaments": cmd.ShowAllTournamentsCMD(),
+		"addparticipant":     cmd.AddParticipantsCMD(),
 	}
 )
 

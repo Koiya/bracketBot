@@ -8,54 +8,43 @@ import (
 	"net/http"
 )
 
-type PostAddParticipantWrapper struct {
-	Data []PostAddParticipant `json:"data"`
-}
+//type PostAddParticipantWrapper struct {
+//	Data []PostAddParticipant `json:"data"`
+//}
+//
+//type PostAddParticipant struct {
+//	Type string `json:"type"`
+//}
+//
+//type PostAddParticipantAttributes struct {
+//	Name string `json:"name"`
+//	Seed string `json:"seed"`
+//	//Optional
+//	Misc     string `json:"misc"`
+//	Email    string `json:"email"`
+//	Username string `json:"username"`
+//}
 
-type PostAddParticipant struct {
-	Type string `json:"type"`
+type Options struct {
+	Seed     int
+	Misc     string
+	Email    string
+	Username string
 }
-
-type PostAddParticipantAttributes struct {
-	Name string `json:"name"`
-	Seed string `json:"seed"`
-	//Optional
-	Misc     string `json:"misc"`
-	Email    string `json:"email"`
-	Username string `json:"username"`
-}
-
-type options struct {
-	seed     int
-	misc     string
-	email    string
-	username string
-}
-type option func(*options)
 
 /* '{"data":{"type":"Participants","attributes":{"name":"As","seed":1,"misc":"","email":"","username":""}}}' */
-func AddParticipants(tourneyID, name string, etc ...option) {
-	var seed int
-	var misc string
-	var email string
-	var username string
-
+func AddParticipants(tourneyID, name string, opt Options) string {
 	fmt.Println("Tourney ID: " + tourneyID)
 	fmt.Println("Name: " + name)
 	//Request to the API
 	if tourneyID == "" {
-		return
+		return "No ID inputted"
+	}
+	if opt.Seed == 0 {
+		opt.Seed = 1
 	}
 	var URL string
 	URL = fmt.Sprintf("https://api.challonge.com/v2.1/tournaments/%v/participants.json", tourneyID)
-	o := &options{}
-	if o.seed > 0 {
-		seed = o.seed
-	} else {
-		seed = 1
-	}
-
-	fmt.Println("URL" + URL)
 	requestBody := fmt.Sprintf(`{
 		"data": {
 		"type" : "Participants",
@@ -67,9 +56,7 @@ func AddParticipants(tourneyID, name string, etc ...option) {
 				"username" : "%v"
 			}
 		}
-	}`, name, seed, misc, email, username)
-	//reqBody := `{"data":{"type":"Participants","attributes":{"name":"As","seed":1,"misc":"","email":"","username":""}}}`
-	fmt.Println(requestBody)
+	}`, name, opt.Seed, opt.Misc, opt.Email, opt.Username)
 
 	client := &http.Client{}
 	req, err := http.NewRequest("POST", URL, bytes.NewBuffer([]byte(requestBody)))
@@ -84,14 +71,19 @@ func AddParticipants(tourneyID, name string, etc ...option) {
 	resp, err := client.Do(req)
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusCreated {
-
-		fmt.Println(resp.StatusCode)
-	}
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	fmt.Println("response Body:", string(body))
 
+	if resp.StatusCode != http.StatusCreated {
+		fmt.Println(resp.StatusCode)
+		return "Name already exists"
+	}
+
+	return fmt.Sprintf(
+		"Added %v to %v", name, tourneyID,
+	)
 }

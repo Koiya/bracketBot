@@ -19,7 +19,7 @@ func errorResponse(err error) func(s *discordgo.Session, i *discordgo.Interactio
 	return cmd
 }
 
-func ShowTournamentsCMD() func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+func ShowAllTournamentsCMD() func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	cmd := func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		data := util.FetchAllTournaments()
 		name := data[0]
