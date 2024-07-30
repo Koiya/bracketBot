@@ -16,10 +16,7 @@ import (
 // Update a Tournament
 // Delete a tournament(admin)
 //
-// show bracket
-//participant
-// -add
-// -remove
+// show bracket svg to png
 
 var (
 	s       *discordgo.Session
@@ -51,6 +48,18 @@ var (
 		{
 			Name:        "showalltournaments",
 			Description: "show all tournament",
+		},
+		{
+			Name:        "showtournament",
+			Description: "Show tournament with given ID",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "tourney-id",
+					Description: "Input ID of the tournament",
+					Required:    true,
+				},
+			},
 		},
 		{
 			Name:        "updatetournament",
@@ -149,6 +158,7 @@ var (
 			})
 		},
 		"showalltournaments": cmd.ShowAllTournamentsCMD(),
+		"showtournament":     cmd.ShowTournamentCMD(),
 		"showparticipants":   cmd.ShowAllParticipantsCMD(),
 		"addparticipant":     cmd.AddParticipantsCMD(),
 		"removeparticipant":  cmd.RemoveParticipantCMD(),
