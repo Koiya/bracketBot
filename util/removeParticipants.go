@@ -8,8 +8,7 @@ import (
 )
 
 func RemoveParticipants(tourneyID, name string) string {
-	fmt.Println("Tourney ID: " + tourneyID)
-	fmt.Println("Name: " + name)
+
 	//Request to the API
 	if tourneyID == "" {
 		return "No ID inputted"

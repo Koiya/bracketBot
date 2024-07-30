@@ -5,7 +5,6 @@
 
 ````
 TODO:
-Set permission based command
 Allow admin to set certain role to certain commands
 Update tournament
 Delete tournament
@@ -15,17 +14,18 @@ need more ideas
 
 ### SETUP:
 
-Set up a config.toml file with this format \
+Create a config.toml file with this format \
 You can get Challonge API key from here : https://challonge.com/settings/developer
 ````
 [Bot]
 token  = {discord bot token goes here}
 guild_id = {discord server id goes here}
+ModRole_ID = {Role ID of the role you want access to add/remove participants cmd} 
 
 [API]
 token = {challonge api key goes here}
 ````
-
+Put config.toml in root directory where the bot folder is located\
 After setting up config file, you can just run ``go run main.go``
 
 ### Commands:
@@ -49,11 +49,13 @@ After setting up config file, you can just run ``go run main.go``
 ````
 /addparticipant {tourney-id} {name} optionals : {seed} {misc} {username} {email} 
 - Add a participant with those parameters
+- Requires role to be set in config.toml to use this command
 ````
 
 
 ````
 /removeparticipant {tourney-id} {name} 
 - Removes a participants from tournament
+- Requires role to be set in config.toml to use this command
 ````
 

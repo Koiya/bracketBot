@@ -50,7 +50,7 @@ func FetchAllParticipants(tourneyID string) [4]string {
 	if err != nil {
 		log.Fatal("Error", err.Error())
 	}
-	fmt.Println(data)
+
 	if resp.StatusCode != 200 {
 		fmt.Println(resp.StatusCode)
 		results[0] = "Error getting data"
@@ -61,7 +61,7 @@ func FetchAllParticipants(tourneyID string) [4]string {
 		results[1] += v.Attributes.Misc + "\n\n\n"
 		results[2] += strconv.Itoa(v.Attributes.Seed) + "\n\n\n"
 	}
-	fmt.Println(data.Data)
+	//fmt.Println(data.Data)
 
 	return results
 }

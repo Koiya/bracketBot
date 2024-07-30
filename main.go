@@ -61,10 +61,10 @@ var (
 				},
 			},
 		},
-		{
-			Name:        "updatetournament",
-			Description: "Updates a tournament with options passed",
-		},
+		//{
+		//	Name:        "updatetournament",
+		//	Description: "Updates a tournament with options passed",
+		//},
 
 		//Participants
 		{

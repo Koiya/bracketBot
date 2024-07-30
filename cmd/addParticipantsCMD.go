@@ -7,6 +7,7 @@ import (
 
 func AddParticipantsCMD() func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	cmd := func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+		var message string
 
 		//Gets the params from the command
 		options := i.ApplicationCommandData().Options
@@ -42,9 +43,12 @@ func AddParticipantsCMD() func(s *discordgo.Session, i *discordgo.InteractionCre
 			Email:    email,
 			Username: username,
 		}
-
-		message := util.AddParticipants(tourneyID, name, customOpt)
-
+		if !util.RoleCheck(i) {
+			message = "You don't have permission to use this command"
+			goto Skip
+		}
+		message = util.AddParticipants(tourneyID, name, customOpt)
+	Skip:
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			// Ignore type for now, they will be discussed in "responses"
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
