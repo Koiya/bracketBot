@@ -16,9 +16,9 @@ func RemoveParticipantCMD() func(s *discordgo.Session, i *discordgo.InteractionC
 			optionMap[opt.Name] = opt
 		}
 		var tourneyID = optionMap["tourney-id"].StringValue()
-		var name = optionMap["name"].StringValue()
+		var participantID = optionMap["participant-id"].StringValue()
 
-		message := util.RemoveParticipants(tourneyID, name)
+		message := util.RemoveParticipants(tourneyID, participantID)
 
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,

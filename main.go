@@ -59,6 +59,18 @@ var (
 
 		//Participants
 		{
+			Name:        "showparticipants",
+			Description: "Show participants from a tournament",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "tourney-id",
+					Description: "Input ID of the tournament",
+					Required:    true,
+				},
+			},
+		},
+		{
 			Name:        "addparticipant",
 			Description: "Add a participant to a tournament",
 			Options: []*discordgo.ApplicationCommandOption{
@@ -103,6 +115,20 @@ var (
 		{
 			Name:        "removeparticipant",
 			Description: "Removes a participant from a tournament",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "tourney-id",
+					Description: "Input ID of the tournament",
+					Required:    true,
+				},
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "participant-id",
+					Description: "Must be the ID of the participant",
+					Required:    true,
+				},
+			},
 		},
 	}
 	commandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
@@ -123,7 +149,9 @@ var (
 			})
 		},
 		"showalltournaments": cmd.ShowAllTournamentsCMD(),
+		"showparticipants":   cmd.ShowAllParticipantsCMD(),
 		"addparticipant":     cmd.AddParticipantsCMD(),
+		"removeparticipant":  cmd.RemoveParticipantCMD(),
 	}
 )
 

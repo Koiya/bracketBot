@@ -21,8 +21,8 @@ type AllTournamentAttributes struct {
 	URL            string `json:"full_challonge_url"`
 }
 
-func FetchAllTournaments() [4]string {
-	var results [4]string
+func FetchAllTournaments() [3]string {
+	var results [3]string
 	//Request to the API
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", "https://api.challonge.com/v2.1/tournaments.json?page=1&per_page=25", nil)
