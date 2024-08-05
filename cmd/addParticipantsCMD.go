@@ -57,15 +57,5 @@ func AddParticipantsCMD() func(s *discordgo.Session, i *discordgo.InteractionCre
 			},
 		})
 	}
-	/*	url := fmt.Sprintf("https://api.challonge.com/v2.1/tournaments/%d/participants.json", TourneyID)
-		d := Participant{
-			name,
-			seed,
-			misc,
-			email,
-			username,
-		}
-		b, err := json.Marshal(d)*/
-
 	return cmd
 }

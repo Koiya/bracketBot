@@ -66,6 +66,37 @@ var (
 		//	Description: "Updates a tournament with options passed",
 		//},
 
+		//Match
+		{
+			Name:        "showmatch",
+			Description: "Show a match from a tournament",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "match-id",
+					Description: "Input ID of the match",
+					Required:    true,
+				},
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "tourney-id",
+					Description: "Input ID of the tournament",
+					Required:    true,
+				},
+			},
+		},
+		{
+			Name:        "showmatches",
+			Description: "Show all matches from a tournament",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "tourney-id",
+					Description: "Input ID of the tournament",
+					Required:    true,
+				},
+			},
+		},
 		//Participants
 		{
 			Name:        "showparticipants",
@@ -162,6 +193,8 @@ var (
 		"showparticipants":   cmd.ShowAllParticipantsCMD(),
 		"addparticipant":     cmd.AddParticipantsCMD(),
 		"removeparticipant":  cmd.RemoveParticipantCMD(),
+		"showmatches":        cmd.ShowAllMatchesCMD(),
+		"showmatch":          cmd.ShowMatchCMD(),
 	}
 )
 
