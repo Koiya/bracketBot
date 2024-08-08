@@ -9,25 +9,25 @@ import (
 	"strconv"
 )
 
-type AllParticipantWrapper struct {
-	Data []AllParticipantInfo `json:"data"`
+type ParticipantWrapper struct {
+	Data ParticipantInfo `json:"data"`
 }
-type AllParticipantInfo struct {
-	Id         string                   `json:"id"`
-	Attributes AllParticipantAttributes `json:"attributes"`
+type ParticipantInfo struct {
+	Id         string                `json:"id"`
+	Attributes ParticipantAttributes `json:"attributes"`
 }
-type AllParticipantAttributes struct {
+type ParticipantAttributes struct {
 	Name     string `json:"name"`
 	Seed     int    `json:"seed"`
 	Misc     string `json:"misc"`
 	Username string `json:"username"`
 }
 
-func FetchAllParticipants(tourneyID string) [4]string {
+func FetchParticipant(tourneyID, participantID string) [4]string {
 	var results [4]string
 	//Request to the API
 	var URL string
-	URL = fmt.Sprintf("https://api.challonge.com/v2.1/tournaments/%v/participants.json", tourneyID)
+	URL = fmt.Sprintf("https://api.challonge.com/v2.1/tournaments/%v/participants/%v.json", tourneyID, participantID)
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", URL, nil)
 	if err != nil {
@@ -45,7 +45,7 @@ func FetchAllParticipants(tourneyID string) [4]string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	var data AllParticipantWrapper
+	var data ParticipantWrapper
 	err = json.Unmarshal(body, &data)
 	if err != nil {
 		log.Fatal("Error", err.Error())
@@ -56,11 +56,9 @@ func FetchAllParticipants(tourneyID string) [4]string {
 		results[0] = "Error getting data"
 		return results
 	}
-	for _, v := range data.Data {
-		results[0] += fmt.Sprintf("%v (%v)\n\n\n", v.Attributes.Name, v.Id)
-		results[1] += v.Attributes.Misc + "\n\n\n"
-		results[2] += strconv.Itoa(v.Attributes.Seed) + "\n\n\n"
-	}
+	results[0] = data.Data.Attributes.Name
+	results[1] = data.Data.Id
+	results[2] = strconv.Itoa(data.Data.Attributes.Seed)
 	//fmt.Println(data.Data)
 
 	return results

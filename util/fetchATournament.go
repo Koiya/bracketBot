@@ -49,7 +49,7 @@ func FetchATournament(tourneyID string) [5]string {
 	if err != nil {
 		log.Fatal("Error", err.Error())
 	}
-	fmt.Println(data)
+	//fmt.Println(data)
 	if resp.StatusCode != 200 {
 		fmt.Println(resp.StatusCode)
 		results[0] = "Error getting data"
@@ -61,6 +61,5 @@ func FetchATournament(tourneyID string) [5]string {
 	results[2] += data.Data.Attributes.TournamentType
 	results[3] += data.Data.Attributes.URL
 	results[4] += data.Data.Attributes.ImageURL
-	fmt.Println(data.Data)
 	return results
 }

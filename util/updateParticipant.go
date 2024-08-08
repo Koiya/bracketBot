@@ -8,32 +8,8 @@ import (
 	"net/http"
 )
 
-//type PostAddParticipantWrapper struct {
-//	Data []PostAddParticipant `json:"data"`
-//}
-//
-//type PostAddParticipant struct {
-//	Type string `json:"type"`
-//}
-//
-//type PostAddParticipantAttributes struct {
-//	Name string `json:"name"`
-//	Seed string `json:"seed"`
-//	//Optional
-//	Misc     string `json:"misc"`
-//	Email    string `json:"email"`
-//	Username string `json:"username"`
-//}
-
-type Options struct {
-	Seed     int
-	Misc     string
-	Email    string
-	Username string
-}
-
 /* '{"data":{"type":"Participants","attributes":{"name":"As","seed":1,"misc":"","email":"","username":""}}}' */
-func AddParticipants(tourneyID, name string, opt Options) string {
+func UpdateParticipant(tourneyID, name string, opt Options) string {
 	fmt.Println("Tourney ID: " + tourneyID)
 	fmt.Println("Name: " + name)
 	//Request to the API
@@ -80,7 +56,7 @@ func AddParticipants(tourneyID, name string, opt Options) string {
 
 	if resp.StatusCode != http.StatusCreated {
 		fmt.Println(resp.StatusCode)
-		return "Error adding in participant. Please check parameters."
+		return "Name already exists"
 	}
 
 	return fmt.Sprintf(

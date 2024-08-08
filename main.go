@@ -11,12 +11,13 @@ import (
 )
 
 //TODO
-// Get one tournament
 // Create Tournament
 // Update a Tournament
 // Delete a tournament(admin)
-//
-// show bracket svg to png
+// Role call feature
+// matches need to be cleaned up
+// create list func
+// implement svg to png func into this
 
 var (
 	s       *discordgo.Session
@@ -97,11 +98,65 @@ var (
 				},
 			},
 		},
+		{
+			Name:        "updatematch",
+			Description: "Update a match from a tournament",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "match-id",
+					Description: "Input ID of the match",
+					Required:    true,
+				},
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "tourney-id",
+					Description: "Input ID of the tournament",
+					Required:    true,
+				},
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "participant-id",
+					Description: "Input ID of the participant",
+					Required:    true,
+				},
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "scores",
+					Description: "Input scores Ex: 3 or 3,0,3",
+					Required:    true,
+				},
+				{
+					Type:        discordgo.ApplicationCommandOptionBoolean,
+					Name:        "advancing",
+					Description: "Advancing if won all set",
+					Required:    true,
+				},
+			},
+		},
 		//Participants
 		{
 			Name:        "showparticipants",
 			Description: "Show participants from a tournament",
 			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "tourney-id",
+					Description: "Input ID of the tournament",
+					Required:    true,
+				},
+			},
+		},
+		{
+			Name:        "showparticipant",
+			Description: "Show participants from a tournament",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "participant-id",
+					Description: "Input ID of the participant",
+					Required:    true,
+				},
 				{
 					Type:        discordgo.ApplicationCommandOptionString,
 					Name:        "tourney-id",
@@ -170,6 +225,24 @@ var (
 				},
 			},
 		},
+		{
+			Name:        "updateparticipant",
+			Description: "Update a participant from a tournament",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "tourney-id",
+					Description: "Input ID of the tournament",
+					Required:    true,
+				},
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "participant-id",
+					Description: "Must be the ID of the participant",
+					Required:    true,
+				},
+			},
+		},
 	}
 	commandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
 
@@ -191,10 +264,12 @@ var (
 		"showalltournaments": cmd.ShowAllTournamentsCMD(),
 		"showtournament":     cmd.ShowTournamentCMD(),
 		"showparticipants":   cmd.ShowAllParticipantsCMD(),
+		"showparticipant":    cmd.ShowParticipantCMD(),
 		"addparticipant":     cmd.AddParticipantsCMD(),
 		"removeparticipant":  cmd.RemoveParticipantCMD(),
 		"showmatches":        cmd.ShowAllMatchesCMD(),
 		"showmatch":          cmd.ShowMatchCMD(),
+		"updatematch":        cmd.UpdateMatchCMD(),
 	}
 )
 

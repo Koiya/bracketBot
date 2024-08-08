@@ -6,7 +6,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func ShowMatchCMD() func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+func ShowParticipantCMD() func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	cmd := func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		//Gets the params from the command
 		options := i.ApplicationCommandData().Options
@@ -15,32 +15,32 @@ func ShowMatchCMD() func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		for _, opt := range options {
 			optionMap[opt.Name] = opt
 		}
-		var matchID = optionMap["match-id"].StringValue()
+		var participantID = optionMap["participant-id"].StringValue()
 		var tourneyID = optionMap["tourney-id"].StringValue()
-		data := util.FetchMatch(tourneyID, matchID)
-		pOne := data[0]
-		score := data[1]
-		pTwo := data[2]
+		data := util.FetchParticipant(tourneyID, participantID)
+		name := data[0]
+		ID := data[1]
+		seed := data[2]
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Embeds: []*discordgo.MessageEmbed{
 					{
-						Title: fmt.Sprintf("Matches in %v", tourneyID),
+						Title: fmt.Sprintf("Participant Info"),
 						Fields: []*discordgo.MessageEmbedField{
 							{
-								Name:   "Participant 1",
-								Value:  pOne,
+								Name:   "Name",
+								Value:  name,
 								Inline: true,
 							},
 							{
-								Name:   "Score",
-								Value:  score,
+								Name:   "ID",
+								Value:  ID,
 								Inline: true,
 							},
 							{
-								Name:   "Participant 2",
-								Value:  pTwo,
+								Name:   "Seed",
+								Value:  seed,
 								Inline: true,
 							},
 						},
