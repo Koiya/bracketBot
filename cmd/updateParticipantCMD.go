@@ -5,7 +5,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func AddParticipantsCMD() func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+func UpdateParticipantCMD() func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	cmd := func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		var message string
 
@@ -17,14 +17,13 @@ func AddParticipantsCMD() func(s *discordgo.Session, i *discordgo.InteractionCre
 			optionMap[opt.Name] = opt
 		}
 		var tourneyID = optionMap["tourney-id"].StringValue()
+		var participantID = optionMap["participant-id"].StringValue()
 		var name = optionMap["name"].StringValue()
 		var seed int64
 		var misc string
 		var email string
 		var username string
 
-		// Get the value from the option map.
-		// When the option exists, ok = true
 		if opt, ok := optionMap["seed"]; ok {
 			seed = opt.IntValue()
 		}
@@ -48,7 +47,7 @@ func AddParticipantsCMD() func(s *discordgo.Session, i *discordgo.InteractionCre
 			message = "You don't have permission to use this command"
 			goto Skip
 		}
-		message = util.AddParticipants(tourneyID, customOpt)
+		message = util.UpdateParticipant(tourneyID, participantID, customOpt)
 	Skip:
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			// Ignore type for now, they will be discussed in "responses"

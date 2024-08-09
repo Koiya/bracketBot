@@ -3,21 +3,13 @@ package main
 import (
 	"bracketBot/cmd"
 	"bracketBot/util"
+	"flag"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"log"
 	"os"
 	"os/signal"
 )
-
-//TODO
-// Create Tournament
-// Update a Tournament
-// Delete a tournament(admin)
-// Role call feature
-// matches need to be cleaned up
-// create list func
-// implement svg to png func into this
 
 var (
 	s       *discordgo.Session
@@ -43,6 +35,39 @@ var (
 			// Commands/options without description will fail the registration
 			// of the command.
 			Description: "Ping pong.",
+		},
+
+		//revise all the commands to use this format ex: update participant/tournament/match, show all (participant/tournament/match)
+		{
+			Name:        "subcommands",
+			Description: "Subcommands and command groups example",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Name:        "subcommand-group",
+					Description: "Subcommands group",
+					Options: []*discordgo.ApplicationCommandOption{
+						{
+							Name:        "nested-subcommand",
+							Description: "Nested subcommand",
+							Type:        discordgo.ApplicationCommandOptionSubCommand,
+							Options: []*discordgo.ApplicationCommandOption{
+								{
+									Type:        discordgo.ApplicationCommandOptionString,
+									Name:        "tourney-id",
+									Description: "Input ID of the tournament",
+									Required:    true,
+								},
+							},
+						},
+					},
+					Type: discordgo.ApplicationCommandOptionSubCommandGroup,
+				},
+				{
+					Name:        "subcommand",
+					Description: "Top-level subcommand",
+					Type:        discordgo.ApplicationCommandOptionSubCommand,
+				},
+			},
 		},
 
 		//Tournaments
@@ -190,7 +215,7 @@ var (
 				{
 					Type:        discordgo.ApplicationCommandOptionString,
 					Name:        "misc",
-					Description: "Description of the participant",
+					Description: "Discord username of the participant",
 					Required:    false,
 				},
 				{
@@ -241,6 +266,36 @@ var (
 					Description: "Must be the ID of the participant",
 					Required:    true,
 				},
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "name",
+					Description: "Name of the participant",
+					Required:    false,
+				},
+				{
+					Type:        discordgo.ApplicationCommandOptionInteger,
+					Name:        "seed",
+					Description: "Seeding of the participant",
+					Required:    false,
+				},
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "misc",
+					Description: "Discord username of the participant",
+					Required:    false,
+				},
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "email",
+					Description: "Email of the participant",
+					Required:    false,
+				},
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "username",
+					Description: "Challonge username of the participant",
+					Required:    false,
+				},
 			},
 		},
 	}
@@ -261,12 +316,41 @@ var (
 				},
 			})
 		},
+		"subcommands": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+			options := i.ApplicationCommandData().Options
+			content := ""
+
+			// As you can see, names of subcommands (nested, top-level)
+			// and subcommand groups are provided through the arguments.
+			switch options[0].Name {
+			case "subcommand":
+				content = "The top-level subcommand is executed. Now try to execute the nested one."
+			case "subcommand-group":
+				options = options[0].Options
+				fmt.Println(options)
+				switch options[0].Name {
+				case "nested-subcommand":
+					content = "Nice, now you know how to execute nested commands too"
+				default:
+					content = "Oops, something went wrong.\n" +
+						"Hol' up, you aren't supposed to see this message."
+				}
+			}
+
+			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Data: &discordgo.InteractionResponseData{
+					Content: content,
+				},
+			})
+		},
 		"showalltournaments": cmd.ShowAllTournamentsCMD(),
 		"showtournament":     cmd.ShowTournamentCMD(),
 		"showparticipants":   cmd.ShowAllParticipantsCMD(),
 		"showparticipant":    cmd.ShowParticipantCMD(),
 		"addparticipant":     cmd.AddParticipantsCMD(),
 		"removeparticipant":  cmd.RemoveParticipantCMD(),
+		"updateparticipant":  cmd.UpdateParticipantCMD(),
 		"showmatches":        cmd.ShowAllMatchesCMD(),
 		"showmatch":          cmd.ShowMatchCMD(),
 		"updatematch":        cmd.UpdateMatchCMD(),
@@ -282,6 +366,7 @@ func init() {
 }
 
 func main() {
+	var RemoveCommands = flag.Bool("rmcmd", true, "Remove all commands after shutdowning or not")
 	s.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {
 		log.Printf("Logged in as: %v#%v  GuildID: %v", s.State.User.Username, s.State.User.Discriminator, GuildID)
 	})
@@ -293,7 +378,9 @@ func main() {
 	}
 
 	registeredCommands := make([]*discordgo.ApplicationCommand, len(commands))
+	fmt.Println("Adding commands...")
 	for i, v := range commands {
+		fmt.Println("Added " + v.Name)
 		cmd, err := s.ApplicationCommandCreate(s.State.User.ID, GuildID, v)
 		if err != nil {
 			log.Panicf("Cannot create '%v' command: %v", v.Name, err)
@@ -308,5 +395,22 @@ func main() {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	<-c
-
+	if *RemoveCommands {
+		log.Println("Removing commands...")
+		// // We need to fetch the commands, since deleting requires the command ID.
+		// // We are doing this from the returned commands on line 375, because using
+		// // this will delete all the commands, which might not be desirable, so we
+		// // are deleting only the commands that we added.
+		// registeredCommands, err := s.ApplicationCommands(s.State.User.ID, *GuildID)
+		// if err != nil {
+		// 	log.Fatalf("Could not fetch registered commands: %v", err)
+		// }
+		for _, v := range registeredCommands {
+			err := s.ApplicationCommandDelete(s.State.User.ID, GuildID, v.ID)
+			if err != nil {
+				log.Panicf("Cannot delete '%v' command: %v", v.Name, err)
+			}
+		}
+	}
+	log.Println("Gracefully shutting down.")
 }

@@ -9,33 +9,41 @@ import (
 )
 
 /* '{"data":{"type":"Participants","attributes":{"name":"As","seed":1,"misc":"","email":"","username":""}}}' */
-func UpdateParticipant(tourneyID, name string, opt Options) string {
-	fmt.Println("Tourney ID: " + tourneyID)
-	fmt.Println("Name: " + name)
+func UpdateParticipant(tourneyID, participantID string, opt Options) string {
+
 	//Request to the API
-	if tourneyID == "" {
-		return "No ID inputted"
-	}
+	var URL string
+	URL = fmt.Sprintf("https://api.challonge.com/v2.1/tournaments/%v/participants/%v.json", tourneyID, participantID)
+	var updatedAttributes string
 	if opt.Seed == 0 {
 		opt.Seed = 1
 	}
-	var URL string
-	URL = fmt.Sprintf("https://api.challonge.com/v2.1/tournaments/%v/participants.json", tourneyID)
+	if opt.Misc != "" {
+		updatedAttributes += `"misc" : "` + opt.Misc + `",`
+	}
+	if opt.Name != "" {
+		updatedAttributes += `"name" : "` + opt.Name + `",`
+	}
+	if opt.Username != "" {
+		updatedAttributes += `"username" : "` + opt.Username + `",`
+	}
+	if opt.Email != "" {
+		updatedAttributes += `"email" : "` + opt.Email + `",`
+	}
+	fmt.Println(opt)
+	fmt.Println(updatedAttributes)
 	requestBody := fmt.Sprintf(`{
 		"data": {
 		"type" : "Participants",
 		"attributes" : {
-				"name" : "%v",
-				"seed" : %d,
-				"misc" : "%v",
-				"email" : "%v",
-				"username" : "%v"
+				%v
+				"seed": "%d"
 			}
 		}
-	}`, name, opt.Seed, opt.Misc, opt.Email, opt.Username)
-
+	}`, updatedAttributes, opt.Seed)
+	fmt.Println(requestBody)
 	client := &http.Client{}
-	req, err := http.NewRequest("POST", URL, bytes.NewBuffer([]byte(requestBody)))
+	req, err := http.NewRequest("PUT", URL, bytes.NewBuffer([]byte(requestBody)))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -54,12 +62,12 @@ func UpdateParticipant(tourneyID, name string, opt Options) string {
 
 	fmt.Println("response Body:", string(body))
 
-	if resp.StatusCode != http.StatusCreated {
+	if resp.StatusCode != 200 {
 		fmt.Println(resp.StatusCode)
 		return "Name already exists"
 	}
-
+	tourneyData := FetchATournament(tourneyID)
 	return fmt.Sprintf(
-		"Added %v to %v", name, tourneyID,
+		"Updated information of %v in %v", opt.Name, tourneyData[0],
 	)
 }

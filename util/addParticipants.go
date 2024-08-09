@@ -26,6 +26,7 @@ import (
 //}
 
 type Options struct {
+	Name     string
 	Seed     int
 	Misc     string
 	Email    string
@@ -33,9 +34,8 @@ type Options struct {
 }
 
 /* '{"data":{"type":"Participants","attributes":{"name":"As","seed":1,"misc":"","email":"","username":""}}}' */
-func AddParticipants(tourneyID, name string, opt Options) string {
-	fmt.Println("Tourney ID: " + tourneyID)
-	fmt.Println("Name: " + name)
+func AddParticipants(tourneyID string, opt Options) string {
+
 	//Request to the API
 	if tourneyID == "" {
 		return "No ID inputted"
@@ -56,7 +56,7 @@ func AddParticipants(tourneyID, name string, opt Options) string {
 				"username" : "%v"
 			}
 		}
-	}`, name, opt.Seed, opt.Misc, opt.Email, opt.Username)
+	}`, opt.Name, opt.Seed, opt.Misc, opt.Email, opt.Username)
 
 	client := &http.Client{}
 	req, err := http.NewRequest("POST", URL, bytes.NewBuffer([]byte(requestBody)))
@@ -82,8 +82,8 @@ func AddParticipants(tourneyID, name string, opt Options) string {
 		fmt.Println(resp.StatusCode)
 		return "Error adding in participant. Please check parameters."
 	}
-
+	tourneyData := FetchATournament(tourneyID)
 	return fmt.Sprintf(
-		"Added %v to %v", name, tourneyID,
+		"Added %v to %v", opt.Name, tourneyData[0],
 	)
 }

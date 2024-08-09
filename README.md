@@ -5,6 +5,12 @@
 
 ````
 TODO:
+Implement bracket image 
+Revise slash commands 
+(ex: /show all (participant/match/tourney) {options}
+     /update (participant/match/tourney) {options})
+List functionality for tournament with a bunch of matches
+Rolecall
 Allow admin to set certain role to certain commands
 Update tournament
 Delete tournament
@@ -13,7 +19,7 @@ need more ideas
 ````
 
 ### SETUP:
-
+Create a role and get the ID of the discord role that you want be able to access certain commands\
 Create a config.toml file with this format \
 You can get Challonge API key from here : https://challonge.com/settings/developer
 ````
@@ -58,4 +64,28 @@ After setting up config file, you can just run ``go run main.go``
 - Removes a participants from tournament
 - Requires role to be set in config.toml to use this command
 ````
+
+
+````
+/updateparticipant {tourney-id} {name} {options}
+- Updates a participant information in a tournament
+- Requires role to be set in config.toml to use this command
+````
+
+````
+/showmatch {match-id} {tourney-id}
+- Shows a single match from a tournament
+````
+
+````
+/showmatches {tourney-id}
+- Shows all matches from a tournament
+````
+
+````
+/updatematch {match-id} {tourney-id} {options}
+- Update a match with options
+````
+
+
 
