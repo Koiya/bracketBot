@@ -2,22 +2,8 @@ package cmd
 
 import (
 	"bracketBot/util"
-	"fmt"
 	"github.com/bwmarrin/discordgo"
 )
-
-func errorResponse(err error) func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-	fmt.Println("Error has occured", err.Error())
-	cmd := func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Content: "error",
-			},
-		})
-	}
-	return cmd
-}
 
 func ShowAllTournamentsCMD() func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	cmd := func(s *discordgo.Session, i *discordgo.InteractionCreate) {

@@ -18,31 +18,36 @@ func AddParticipantsCMD() func(s *discordgo.Session, i *discordgo.InteractionCre
 		}
 		var tourneyID = optionMap["tourney-id"].StringValue()
 		var name = optionMap["name"].StringValue()
+		//Discord int is 64bit
 		var seed int64
 		var misc string
-		var email string
-		var username string
+		// Uncomment if using email and challonge username
+		//var email string
+		//var username string
 
 		// Get the value from the option map.
 		// When the option exists, ok = true
 		if opt, ok := optionMap["seed"]; ok {
 			seed = opt.IntValue()
 		}
-		if opt, ok := optionMap["email"]; ok {
-			email = opt.StringValue()
-		}
-		if opt, ok := optionMap["username"]; ok {
-			username = opt.StringValue()
-		}
+
+		//if opt, ok := optionMap["email"]; ok {
+		//	email = opt.StringValue()
+		//}
+		//if opt, ok := optionMap["username"]; ok {
+		//	username = opt.StringValue()
+		//}
+
 		if opt, ok := optionMap["misc"]; ok {
 			misc = opt.StringValue()
 		}
+		//seed must be converted to 32bit after getting value
 		customOpt := util.Options{
-			Name:     name,
-			Seed:     int(seed),
-			Misc:     misc,
-			Email:    email,
-			Username: username,
+			Name: name,
+			Seed: int(seed),
+			Misc: misc,
+			//Email:    email,
+			//Username: username,
 		}
 		if !util.RoleCheck(i) {
 			message = "You don't have permission to use this command"

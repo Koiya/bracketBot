@@ -59,7 +59,8 @@ func FetchParticipant(tourneyID, participantID string) [4]string {
 	results[0] = data.Data.Attributes.Name
 	results[1] = data.Data.Id
 	results[2] = strconv.Itoa(data.Data.Attributes.Seed)
-	//fmt.Println(data.Data)
+	results[3] = data.Data.Attributes.Misc
+	fmt.Println(data.Data)
 
 	return results
 }

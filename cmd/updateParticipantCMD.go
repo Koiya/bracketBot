@@ -18,12 +18,14 @@ func UpdateParticipantCMD() func(s *discordgo.Session, i *discordgo.InteractionC
 		}
 		var tourneyID = optionMap["tourney-id"].StringValue()
 		var participantID = optionMap["participant-id"].StringValue()
-		var name = optionMap["name"].StringValue()
+		var name string
 		var seed int64
 		var misc string
 		var email string
 		var username string
-
+		if opt, ok := optionMap["name"]; ok {
+			name = opt.StringValue()
+		}
 		if opt, ok := optionMap["seed"]; ok {
 			seed = opt.IntValue()
 		}
@@ -50,7 +52,6 @@ func UpdateParticipantCMD() func(s *discordgo.Session, i *discordgo.InteractionC
 		message = util.UpdateParticipant(tourneyID, participantID, customOpt)
 	Skip:
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-			// Ignore type for now, they will be discussed in "responses"
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: message,

@@ -21,6 +21,7 @@ func ShowParticipantCMD() func(s *discordgo.Session, i *discordgo.InteractionCre
 		name := data[0]
 		ID := data[1]
 		seed := data[2]
+		misc := data[3]
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
@@ -29,8 +30,8 @@ func ShowParticipantCMD() func(s *discordgo.Session, i *discordgo.InteractionCre
 						Title: fmt.Sprintf("Participant Info"),
 						Fields: []*discordgo.MessageEmbedField{
 							{
-								Name:   "Name",
-								Value:  name,
+								Name:   "Name (Discord user)",
+								Value:  fmt.Sprintf("%s (%s)", name, misc),
 								Inline: true,
 							},
 							{

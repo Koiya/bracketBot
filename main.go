@@ -298,6 +298,18 @@ var (
 				},
 			},
 		},
+		{
+			Name:        "rollcall",
+			Description: "Start up match request and let player join off a button",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Type:        discordgo.ApplicationCommandOptionString,
+					Name:        "tourney-id",
+					Description: "Input ID of the tournament",
+					Required:    true,
+				},
+			},
+		},
 	}
 	commandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
 
@@ -354,15 +366,14 @@ var (
 		"showmatches":        cmd.ShowAllMatchesCMD(),
 		"showmatch":          cmd.ShowMatchCMD(),
 		"updatematch":        cmd.UpdateMatchCMD(),
+		"rollcall":           cmd.RollCallCMD(),
+	}
+	componentsHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
+		"rc_join": cmd.RCJoinComponent(),
 	}
 )
 
 func init() {
-	s.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-		if h, ok := commandHandlers[i.ApplicationCommandData().Name]; ok {
-			h(s, i)
-		}
-	})
 }
 
 func main() {
@@ -370,13 +381,24 @@ func main() {
 	s.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {
 		log.Printf("Logged in as: %v#%v  GuildID: %v", s.State.User.Username, s.State.User.Discriminator, GuildID)
 	})
+	s.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+		switch i.Type {
+		case discordgo.InteractionApplicationCommand:
+			if h, ok := commandHandlers[i.ApplicationCommandData().Name]; ok {
+				h(s, i)
+			}
+		case discordgo.InteractionMessageComponent:
 
+			if h, ok := componentsHandlers[i.MessageComponentData().CustomID]; ok {
+				h(s, i)
+			}
+		}
+	})
 	// add a event handler
 	if err := s.Open(); err != nil {
 		fmt.Println("Error opening connection,", err.Error())
 		return
 	}
-
 	registeredCommands := make([]*discordgo.ApplicationCommand, len(commands))
 	fmt.Println("Adding commands...")
 	for i, v := range commands {

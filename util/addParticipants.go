@@ -52,11 +52,11 @@ func AddParticipants(tourneyID string, opt Options) string {
 				"name" : "%v",
 				"seed" : %d,
 				"misc" : "%v",
-				"email" : "%v",
-				"username" : "%v"
+				"email" : "",
+				"username" : ""
 			}
 		}
-	}`, opt.Name, opt.Seed, opt.Misc, opt.Email, opt.Username)
+	}`, opt.Name, opt.Seed, opt.Misc)
 
 	client := &http.Client{}
 	req, err := http.NewRequest("POST", URL, bytes.NewBuffer([]byte(requestBody)))
@@ -84,6 +84,6 @@ func AddParticipants(tourneyID string, opt Options) string {
 	}
 	tourneyData := FetchATournament(tourneyID)
 	return fmt.Sprintf(
-		"Added %v to %v", opt.Name, tourneyData[0],
+		"Successfully added %v to %v", opt.Name, tourneyData[0],
 	)
 }
