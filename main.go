@@ -69,7 +69,48 @@ var (
 				},
 			},
 		},
-
+		{
+			Name:        "create",
+			Description: "Create tourney/participant",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Name:        "tournament",
+					Description: "Create a tournament",
+					Options: []*discordgo.ApplicationCommandOption{
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "name",
+							Description: "Name of the tournament",
+							Required:    true,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "tournament_type",
+							Description: "Single Elimination, Double Elimination, Round Robin, Swiss, Free for all",
+							Required:    true,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "game_name",
+							Description: "Name of the game",
+							Required:    true,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "start_time",
+							Description: "Input date and time",
+							Required:    true,
+						},
+					},
+					Type: discordgo.ApplicationCommandOptionSubCommand,
+				},
+				{
+					Name:        "participant",
+					Description: "Insert a participant in a tournament",
+					Type:        discordgo.ApplicationCommandOptionSubCommand,
+				},
+			},
+		},
 		//Tournaments
 		{
 			Name:        "showalltournaments",
@@ -355,6 +396,32 @@ var (
 					Content: content,
 				},
 			})
+		},
+		"create": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+			options := i.ApplicationCommandData().Options
+
+			// As you can see, names of subcommands (nested, top-level)
+			// and subcommand groups are provided through the arguments.
+			switch options[0].Name {
+			case "tournament":
+				if err := cmd.CreateTournamentCMD(s, i); err != nil {
+					s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+						Type: discordgo.InteractionResponseChannelMessageWithSource,
+						Data: &discordgo.InteractionResponseData{
+							Content: "Error occurred when using command. Please try again later.",
+						},
+					})
+					fmt.Println(err)
+				}
+			case "participant":
+				s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+					Type: discordgo.InteractionResponseChannelMessageWithSource,
+					Data: &discordgo.InteractionResponseData{
+						Content: "TEST",
+					},
+				})
+			}
+
 		},
 		"showalltournaments": cmd.ShowAllTournamentsCMD(),
 		"showtournament":     cmd.ShowTournamentCMD(),
