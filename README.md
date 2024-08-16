@@ -5,16 +5,11 @@
 
 ````
 TODO:
+UPDATE README
 Implement bracket image 
-Revise slash commands 
-(ex: /show all (participant/match/tourney) {options}
-     /update (participant/match/tourney) {options})
 List functionality for tournament with a bunch of matches
-Rolecall
+Rolecall still WIP
 Allow admin to set certain role to certain commands
-Update tournament
-Delete tournament
-Create tournament
 need more ideas
 ````
 

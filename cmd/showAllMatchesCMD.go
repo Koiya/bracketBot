@@ -6,41 +6,41 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func ShowParticipantCMD(s *discordgo.Session, i *discordgo.InteractionCreate) error {
+func ShowAllMatchesCMD(s *discordgo.Session, i *discordgo.InteractionCreate) error {
 	//Gets the params from the command
-	options := i.ApplicationCommandData().Options[0].Options
+	options := i.ApplicationCommandData().Options[0].Options[0].Options
 
 	optionMap := make(map[string]*discordgo.ApplicationCommandInteractionDataOption, len(options))
 	for _, opt := range options {
 		optionMap[opt.Name] = opt
 	}
-	var participantID = optionMap["participant-id"].StringValue()
 	var tourneyID = optionMap["tourney-id"].StringValue()
-	data := util.FetchParticipant(tourneyID, participantID)
-	name := data[0]
-	ID := data[1]
-	seed := data[2]
-	misc := data[3]
+	tourneyData := util.FetchATournament(tourneyID)
+	tourneyName := tourneyData[0]
+	data := util.FetchAllMatches(tourneyID)
+	pOne := data[0]
+	score := data[1]
+	pTwo := data[2]
 	cmd := &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Embeds: []*discordgo.MessageEmbed{
 				{
-					Title: fmt.Sprintf("Participant Info"),
+					Title: fmt.Sprintf("Matches in %v", tourneyName),
 					Fields: []*discordgo.MessageEmbedField{
 						{
-							Name:   "Name (Discord user)",
-							Value:  fmt.Sprintf("%s (%s)", name, misc),
+							Name:   "Participant 1",
+							Value:  pOne,
 							Inline: true,
 						},
 						{
-							Name:   "ID",
-							Value:  ID,
+							Name:   "Score",
+							Value:  score,
 							Inline: true,
 						},
 						{
-							Name:   "Seed",
-							Value:  seed,
+							Name:   "Participant 2",
+							Value:  pTwo,
 							Inline: true,
 						},
 					},

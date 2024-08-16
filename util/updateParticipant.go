@@ -24,12 +24,12 @@ func UpdateParticipant(tourneyID, participantID string, opt Options) string {
 	if opt.Name != "" {
 		updatedAttributes += `"name" : "` + opt.Name + `",`
 	}
-	if opt.Username != "" {
-		updatedAttributes += `"username" : "` + opt.Username + `",`
-	}
-	if opt.Email != "" {
-		updatedAttributes += `"email" : "` + opt.Email + `",`
-	}
+	//if opt.Username != "" {
+	//	updatedAttributes += `"username" : "` + opt.Username + `",`
+	//}
+	//if opt.Email != "" {
+	//	updatedAttributes += `"email" : "` + opt.Email + `",`
+	//}
 	fmt.Println(opt)
 	fmt.Println(updatedAttributes)
 	requestBody := fmt.Sprintf(`{

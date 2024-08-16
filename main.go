@@ -69,6 +69,7 @@ var (
 				},
 			},
 		},
+		//CREATE COMMANDS
 		{
 			Name:        "create",
 			Description: "Create tourney/participant",
@@ -76,6 +77,7 @@ var (
 				{
 					Name:        "tournament",
 					Description: "Create a tournament",
+					Type:        discordgo.ApplicationCommandOptionSubCommand,
 					Options: []*discordgo.ApplicationCommandOption{
 						{
 							Type:        discordgo.ApplicationCommandOptionString,
@@ -102,15 +104,53 @@ var (
 							Required:    true,
 						},
 					},
-					Type: discordgo.ApplicationCommandOptionSubCommand,
 				},
 				{
 					Name:        "participant",
-					Description: "Insert a participant in a tournament",
+					Description: "Add a participant to a tournament",
 					Type:        discordgo.ApplicationCommandOptionSubCommand,
+					Options: []*discordgo.ApplicationCommandOption{
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "tourney-id",
+							Description: "Input ID of the tournament",
+							Required:    true,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "name",
+							Description: "Name of the participant",
+							Required:    true,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "discord-user",
+							Description: "Discord username of the participant",
+							Required:    true,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionInteger,
+							Name:        "seed",
+							Description: "Seeding of the participant",
+							Required:    false,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "email",
+							Description: "Email of the participant",
+							Required:    false,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "username",
+							Description: "Challonge username of the participant",
+							Required:    false,
+						},
+					},
 				},
 			},
 		},
+		//REMOVE COMMANDS
 		{
 			Name:        "remove",
 			Description: "Remove a tourney/participant",
@@ -118,6 +158,7 @@ var (
 				{
 					Name:        "tournament",
 					Description: "Remove a tournament",
+					Type:        discordgo.ApplicationCommandOptionSubCommand,
 					Options: []*discordgo.ApplicationCommandOption{
 						{
 							Type:        discordgo.ApplicationCommandOptionString,
@@ -126,22 +167,51 @@ var (
 							Required:    true,
 						},
 					},
-					Type: discordgo.ApplicationCommandOptionSubCommand,
 				},
 				{
 					Name:        "participant",
-					Description: "Insert a participant in a tournament",
+					Description: "Removes a participant from a tournament",
 					Type:        discordgo.ApplicationCommandOptionSubCommand,
+					Options: []*discordgo.ApplicationCommandOption{
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "tourney-id",
+							Description: "Input ID of the tournament",
+							Required:    true,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "participant-id",
+							Description: "Must be the ID of the participant",
+							Required:    true,
+						},
+					},
 				},
 			},
 		},
+		//UPDATE COMMANDS
 		{
 			Name:        "update",
-			Description: "update a tourney/participant",
+			Description: "Update tourney/participant/match/state",
 			Options: []*discordgo.ApplicationCommandOption{
 				{
+					Name:        "tournament",
+					Description: "Update tournament information",
+					Type:        discordgo.ApplicationCommandOptionSubCommand,
+					Options: []*discordgo.ApplicationCommandOption{
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "tourney-id",
+							Description: "Input the tournament id that you want to delete",
+							Required:    true,
+						},
+					},
+				},
+				{
+
 					Name:        "tournamentstate",
-					Description: "update a tournament",
+					Description: "Update tournament's state",
+					Type:        discordgo.ApplicationCommandOptionSubCommand,
 					Options: []*discordgo.ApplicationCommandOption{
 						{
 							Type:        discordgo.ApplicationCommandOptionString,
@@ -189,238 +259,192 @@ var (
 								},
 							}},
 					},
-					Type: discordgo.ApplicationCommandOptionSubCommand,
 				},
 				{
 					Name:        "participant",
-					Description: "Insert a participant in a tournament",
+					Description: "Update a participant from a tournament",
 					Type:        discordgo.ApplicationCommandOptionSubCommand,
+					Options: []*discordgo.ApplicationCommandOption{
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "tourney-id",
+							Description: "Input ID of the tournament",
+							Required:    true,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "participant-id",
+							Description: "Must be the ID of the participant",
+							Required:    true,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "name",
+							Description: "Name of the participant",
+							Required:    false,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionInteger,
+							Name:        "seed",
+							Description: "Seeding of the participant",
+							Required:    false,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "discord_user",
+							Description: "Discord username of the participant",
+							Required:    false,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "email",
+							Description: "Email of the participant",
+							Required:    false,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "username",
+							Description: "Challonge username of the participant",
+							Required:    false,
+						},
+					},
+				},
+				{
+					Name:        "match",
+					Description: "Update a match from a tournament",
+					Type:        discordgo.ApplicationCommandOptionSubCommand,
+					Options: []*discordgo.ApplicationCommandOption{
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "match-id",
+							Description: "Input ID of the match",
+							Required:    true,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "tourney-id",
+							Description: "Input ID of the tournament",
+							Required:    true,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "participant-id",
+							Description: "Input ID of the participant",
+							Required:    true,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "scores",
+							Description: "Input scores Ex: 3 or 3,0,3",
+							Required:    true,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionBoolean,
+							Name:        "advancing",
+							Description: "Advancing if won all set",
+							Required:    true,
+						},
+					},
 				},
 			},
 		},
-		//Tournaments
+		//SHOW COMMANDS
 		{
-			Name:        "showalltournaments",
-			Description: "show all tournament",
-		},
-		{
-			Name:        "showtournament",
-			Description: "Show tournament with given ID",
+			Name:        "show",
+			Description: "Display matches/tournaments/participants",
 			Options: []*discordgo.ApplicationCommandOption{
 				{
-					Type:        discordgo.ApplicationCommandOptionString,
-					Name:        "tourney-id",
-					Description: "Input ID of the tournament",
-					Required:    true,
+					Name:        "all",
+					Description: "Display all matches/tournaments/participants",
+					Options: []*discordgo.ApplicationCommandOption{
+						{
+							Name:        "tournament",
+							Description: "Display all tournaments ",
+							Type:        discordgo.ApplicationCommandOptionSubCommand,
+						},
+						{
+							Name:        "match",
+							Description: "Display all matches in a tournament",
+							Type:        discordgo.ApplicationCommandOptionSubCommand,
+							Options: []*discordgo.ApplicationCommandOption{
+								{
+									Type:        discordgo.ApplicationCommandOptionString,
+									Name:        "tourney-id",
+									Description: "Input ID of the tournament",
+									Required:    true,
+								},
+							},
+						},
+						{
+							Name:        "participant",
+							Description: "Display all participants in a tournament ",
+							Type:        discordgo.ApplicationCommandOptionSubCommand,
+							Options: []*discordgo.ApplicationCommandOption{
+								{
+									Type:        discordgo.ApplicationCommandOptionString,
+									Name:        "tourney-id",
+									Description: "Input ID of the tournament",
+									Required:    true,
+								},
+							},
+						},
+					},
+					Type: discordgo.ApplicationCommandOptionSubCommandGroup,
+				},
+				{
+					Name:        "tournament",
+					Description: "Display a tournament with given ID",
+					Type:        discordgo.ApplicationCommandOptionSubCommand,
+					Options: []*discordgo.ApplicationCommandOption{
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "tourney-id",
+							Description: "Input ID of the tournament",
+							Required:    true,
+						},
+					},
+				},
+				{
+					Name:        "match",
+					Description: "Display a match with given IDs",
+					Type:        discordgo.ApplicationCommandOptionSubCommand,
+					Options: []*discordgo.ApplicationCommandOption{
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "match-id",
+							Description: "Input ID of the match",
+							Required:    true,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "tourney-id",
+							Description: "Input ID of the tournament",
+							Required:    true,
+						},
+					},
+				},
+				{
+					Name:        "participant",
+					Description: "Display a participant with given IDs",
+					Type:        discordgo.ApplicationCommandOptionSubCommand,
+					Options: []*discordgo.ApplicationCommandOption{
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "participant-id",
+							Description: "Input ID of the participant",
+							Required:    true,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "tourney-id",
+							Description: "Input ID of the tournament",
+							Required:    true,
+						},
+					},
 				},
 			},
 		},
-		//Match
-		{
-			Name:        "showmatch",
-			Description: "Show a match from a tournament",
-			Options: []*discordgo.ApplicationCommandOption{
-				{
-					Type:        discordgo.ApplicationCommandOptionString,
-					Name:        "match-id",
-					Description: "Input ID of the match",
-					Required:    true,
-				},
-				{
-					Type:        discordgo.ApplicationCommandOptionString,
-					Name:        "tourney-id",
-					Description: "Input ID of the tournament",
-					Required:    true,
-				},
-			},
-		},
-		{
-			Name:        "showmatches",
-			Description: "Show all matches from a tournament",
-			Options: []*discordgo.ApplicationCommandOption{
-				{
-					Type:        discordgo.ApplicationCommandOptionString,
-					Name:        "tourney-id",
-					Description: "Input ID of the tournament",
-					Required:    true,
-				},
-			},
-		},
-		{
-			Name:        "updatematch",
-			Description: "Update a match from a tournament",
-			Options: []*discordgo.ApplicationCommandOption{
-				{
-					Type:        discordgo.ApplicationCommandOptionString,
-					Name:        "match-id",
-					Description: "Input ID of the match",
-					Required:    true,
-				},
-				{
-					Type:        discordgo.ApplicationCommandOptionString,
-					Name:        "tourney-id",
-					Description: "Input ID of the tournament",
-					Required:    true,
-				},
-				{
-					Type:        discordgo.ApplicationCommandOptionString,
-					Name:        "participant-id",
-					Description: "Input ID of the participant",
-					Required:    true,
-				},
-				{
-					Type:        discordgo.ApplicationCommandOptionString,
-					Name:        "scores",
-					Description: "Input scores Ex: 3 or 3,0,3",
-					Required:    true,
-				},
-				{
-					Type:        discordgo.ApplicationCommandOptionBoolean,
-					Name:        "advancing",
-					Description: "Advancing if won all set",
-					Required:    true,
-				},
-			},
-		},
-		//Participants
-		{
-			Name:        "showparticipants",
-			Description: "Show participants from a tournament",
-			Options: []*discordgo.ApplicationCommandOption{
-				{
-					Type:        discordgo.ApplicationCommandOptionString,
-					Name:        "tourney-id",
-					Description: "Input ID of the tournament",
-					Required:    true,
-				},
-			},
-		},
-		{
-			Name:        "showparticipant",
-			Description: "Show participants from a tournament",
-			Options: []*discordgo.ApplicationCommandOption{
-				{
-					Type:        discordgo.ApplicationCommandOptionString,
-					Name:        "participant-id",
-					Description: "Input ID of the participant",
-					Required:    true,
-				},
-				{
-					Type:        discordgo.ApplicationCommandOptionString,
-					Name:        "tourney-id",
-					Description: "Input ID of the tournament",
-					Required:    true,
-				},
-			},
-		},
-		{
-			Name:        "addparticipant",
-			Description: "Add a participant to a tournament",
-			Options: []*discordgo.ApplicationCommandOption{
-				{
-					Type:        discordgo.ApplicationCommandOptionString,
-					Name:        "tourney-id",
-					Description: "Input ID of the tournament",
-					Required:    true,
-				},
-				{
-					Type:        discordgo.ApplicationCommandOptionString,
-					Name:        "name",
-					Description: "Name of the participant",
-					Required:    true,
-				},
-				{
-					Type:        discordgo.ApplicationCommandOptionInteger,
-					Name:        "seed",
-					Description: "Seeding of the participant",
-					Required:    false,
-				},
-				{
-					Type:        discordgo.ApplicationCommandOptionString,
-					Name:        "misc",
-					Description: "Discord username of the participant",
-					Required:    false,
-				},
-				{
-					Type:        discordgo.ApplicationCommandOptionString,
-					Name:        "email",
-					Description: "Email of the participant",
-					Required:    false,
-				},
-				{
-					Type:        discordgo.ApplicationCommandOptionString,
-					Name:        "username",
-					Description: "Challonge username of the participant",
-					Required:    false,
-				},
-			},
-		},
-		{
-			Name:        "removeparticipant",
-			Description: "Removes a participant from a tournament",
-			Options: []*discordgo.ApplicationCommandOption{
-				{
-					Type:        discordgo.ApplicationCommandOptionString,
-					Name:        "tourney-id",
-					Description: "Input ID of the tournament",
-					Required:    true,
-				},
-				{
-					Type:        discordgo.ApplicationCommandOptionString,
-					Name:        "participant-id",
-					Description: "Must be the ID of the participant",
-					Required:    true,
-				},
-			},
-		},
-		{
-			Name:        "updateparticipant",
-			Description: "Update a participant from a tournament",
-			Options: []*discordgo.ApplicationCommandOption{
-				{
-					Type:        discordgo.ApplicationCommandOptionString,
-					Name:        "tourney-id",
-					Description: "Input ID of the tournament",
-					Required:    true,
-				},
-				{
-					Type:        discordgo.ApplicationCommandOptionString,
-					Name:        "participant-id",
-					Description: "Must be the ID of the participant",
-					Required:    true,
-				},
-				{
-					Type:        discordgo.ApplicationCommandOptionString,
-					Name:        "name",
-					Description: "Name of the participant",
-					Required:    false,
-				},
-				{
-					Type:        discordgo.ApplicationCommandOptionInteger,
-					Name:        "seed",
-					Description: "Seeding of the participant",
-					Required:    false,
-				},
-				{
-					Type:        discordgo.ApplicationCommandOptionString,
-					Name:        "misc",
-					Description: "Discord username of the participant",
-					Required:    false,
-				},
-				{
-					Type:        discordgo.ApplicationCommandOptionString,
-					Name:        "email",
-					Description: "Email of the participant",
-					Required:    false,
-				},
-				{
-					Type:        discordgo.ApplicationCommandOptionString,
-					Name:        "username",
-					Description: "Challonge username of the participant",
-					Required:    false,
-				},
-			},
-		},
+		//UTILITY COMMANDS
 		{
 			Name:        "rollcall",
 			Description: "Start up match request and let player join off a button",
@@ -435,7 +459,6 @@ var (
 		},
 	}
 	commandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
-
 		"ping": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			var message string
 			if len(i.Member.Roles) == 0 {
@@ -451,6 +474,7 @@ var (
 				},
 			})
 		},
+		//TEMPLATE
 		"subcommands": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			options := i.ApplicationCommandData().Options
 			content := ""
@@ -479,11 +503,9 @@ var (
 				},
 			})
 		},
+		//CREATE HANDLER
 		"create": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			options := i.ApplicationCommandData().Options
-
-			// As you can see, names of subcommands (nested, top-level)
-			// and subcommand groups are provided through the arguments.
 			switch options[0].Name {
 			case "tournament":
 				if err := cmd.CreateTournamentCMD(s, i); err != nil {
@@ -496,20 +518,20 @@ var (
 					fmt.Println(err)
 				}
 			case "participant":
-				s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-					Type: discordgo.InteractionResponseChannelMessageWithSource,
-					Data: &discordgo.InteractionResponseData{
-						Content: "TEST",
-					},
-				})
+				if err := cmd.AddParticipantsCMD(s, i); err != nil {
+					s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+						Type: discordgo.InteractionResponseChannelMessageWithSource,
+						Data: &discordgo.InteractionResponseData{
+							Content: "Error occurred when using command. Please try again later.",
+						},
+					})
+					fmt.Println(err)
+				}
 			}
-
 		},
+		//REMOVE HANDLER
 		"remove": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			options := i.ApplicationCommandData().Options
-
-			// As you can see, names of subcommands (nested, top-level)
-			// and subcommand groups are provided through the arguments.
 			switch options[0].Name {
 			case "tournament":
 				if err := cmd.RemoveTournament(s, i); err != nil {
@@ -522,15 +544,19 @@ var (
 					fmt.Println(err)
 				}
 			case "participant":
-				s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-					Type: discordgo.InteractionResponseChannelMessageWithSource,
-					Data: &discordgo.InteractionResponseData{
-						Content: "TEST",
-					},
-				})
+				if err := cmd.RemoveParticipantCMD(s, i); err != nil {
+					s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+						Type: discordgo.InteractionResponseChannelMessageWithSource,
+						Data: &discordgo.InteractionResponseData{
+							Content: "Error occurred when using command. Please try again later.",
+						},
+					})
+					fmt.Println(err)
+				}
 			}
 
 		},
+		//UPDATE HANDLER
 		"update": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			options := i.ApplicationCommandData().Options
 			switch options[0].Name {
@@ -555,25 +581,97 @@ var (
 					fmt.Println(err)
 				}
 			case "participant":
-				s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-					Type: discordgo.InteractionResponseChannelMessageWithSource,
-					Data: &discordgo.InteractionResponseData{
-						Content: "TEST",
-					},
-				})
+				if err := cmd.UpdateParticipantCMD(s, i); err != nil {
+					s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+						Type: discordgo.InteractionResponseChannelMessageWithSource,
+						Data: &discordgo.InteractionResponseData{
+							Content: "Error occurred when using command. Please try again later.",
+						},
+					})
+					fmt.Println(err)
+				}
+			case "match":
+				if err := cmd.UpdateParticipantCMD(s, i); err != nil {
+					s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+						Type: discordgo.InteractionResponseChannelMessageWithSource,
+						Data: &discordgo.InteractionResponseData{
+							Content: "Error occurred when using command. Please try again later.",
+						},
+					})
+					fmt.Println(err)
+				}
 			}
 		},
-		"showalltournaments": cmd.ShowAllTournamentsCMD(),
-		"showtournament":     cmd.ShowTournamentCMD(),
-		"showparticipants":   cmd.ShowAllParticipantsCMD(),
-		"showparticipant":    cmd.ShowParticipantCMD(),
-		"addparticipant":     cmd.AddParticipantsCMD(),
-		"removeparticipant":  cmd.RemoveParticipantCMD(),
-		"updateparticipant":  cmd.UpdateParticipantCMD(),
-		"showmatches":        cmd.ShowAllMatchesCMD(),
-		"showmatch":          cmd.ShowMatchCMD(),
-		"updatematch":        cmd.UpdateMatchCMD(),
-		"rollcall":           cmd.RollCallCMD(),
+		"show": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+			options := i.ApplicationCommandData().Options
+			switch options[0].Name {
+			case "tournament":
+				if err := cmd.ShowTournamentCMD(s, i); err != nil {
+					s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+						Type: discordgo.InteractionResponseChannelMessageWithSource,
+						Data: &discordgo.InteractionResponseData{
+							Content: "Error occurred when using command. Please try again later.",
+						},
+					})
+					fmt.Println(err)
+				}
+			case "match":
+				if err := cmd.ShowMatchCMD(s, i); err != nil {
+					s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+						Type: discordgo.InteractionResponseChannelMessageWithSource,
+						Data: &discordgo.InteractionResponseData{
+							Content: "Error occurred when using command. Please try again later.",
+						},
+					})
+					fmt.Println(err)
+				}
+			case "participant":
+				if err := cmd.ShowParticipantCMD(s, i); err != nil {
+					s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+						Type: discordgo.InteractionResponseChannelMessageWithSource,
+						Data: &discordgo.InteractionResponseData{
+							Content: "Error occurred when using command. Please try again later.",
+						},
+					})
+					fmt.Println(err)
+				}
+			case "all":
+				options = options[0].Options
+				switch options[0].Name {
+				case "tournament":
+					if err := cmd.ShowAllTournamentsCMD(s, i); err != nil {
+						s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+							Type: discordgo.InteractionResponseChannelMessageWithSource,
+							Data: &discordgo.InteractionResponseData{
+								Content: "Error occurred when using command. Please try again later.",
+							},
+						})
+						fmt.Println(err)
+					}
+				case "match":
+					if err := cmd.ShowAllMatchesCMD(s, i); err != nil {
+						s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+							Type: discordgo.InteractionResponseChannelMessageWithSource,
+							Data: &discordgo.InteractionResponseData{
+								Content: "Error occurred when using command. Please try again later.",
+							},
+						})
+						fmt.Println(err)
+					}
+				case "participant":
+					if err := cmd.ShowAllParticipantsCMD(s, i); err != nil {
+						s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+							Type: discordgo.InteractionResponseChannelMessageWithSource,
+							Data: &discordgo.InteractionResponseData{
+								Content: "Error occurred when using command. Please try again later.",
+							},
+						})
+						fmt.Println(err)
+					}
+				}
+			}
+		},
+		"rollcall": cmd.RollCallCMD(),
 	}
 	componentsHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
 		"rc_join": cmd.RCJoinComponent(),

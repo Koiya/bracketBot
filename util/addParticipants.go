@@ -9,11 +9,11 @@ import (
 )
 
 type Options struct {
-	Name     string
-	Seed     int
-	Misc     string
-	Email    string
-	Username string
+	Name string
+	Seed int
+	Misc string
+	//Email    string
+	//Username string
 }
 
 func AddParticipants(tourneyID string, opt Options) string {
