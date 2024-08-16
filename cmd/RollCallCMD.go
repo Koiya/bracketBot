@@ -4,6 +4,7 @@ import (
 	"bracketBot/util"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
+	"regexp"
 )
 
 func RollCallCMD() func(s *discordgo.Session, i *discordgo.InteractionCreate) {
@@ -22,6 +23,7 @@ func RollCallCMD() func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
+				Content: fmt.Sprintf("||%v||", tourneyID),
 				Embeds: []*discordgo.MessageEmbed{
 					{
 						Title:       "Rollcall for " + tourneyName,
@@ -78,26 +80,31 @@ func RollCallCMD() func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 
 func RCJoinComponent() func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 	cmd := func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-		fmt.Println(i.Message.ChannelID)
-		fmt.Println(i.Message.ID)
-		//optionMap := make(map[string]*discordgo.ApplicationCommandInteractionDataOption, len(options))
-		//for _, opt := range options {
-		//	optionMap[opt.Name] = opt
-		//}
-		//var tourneyID = optionMap["tourney-id"].StringValue()
+		fmt.Println(len(i.Message.Embeds))
+		emb := i.Message.Embeds
+		optionMap := make(map[string]*discordgo.MessageEmbed, len(emb))
+		for _, opt := range emb {
+			optionMap[opt.URL] = opt
+		}
+		fmt.Println(optionMap)
+		re, e := regexp.Compile(`\|\|`)
+		if e != nil {
+			fmt.Println("Error compiling regex:", e)
+			return
+		}
+		tourneyID := re.ReplaceAllString(i.Message.Content, "")
 		name := i.Member.User.GlobalName
 		discordUser := i.Member.User.Username
-		fmt.Println(name + " " + discordUser)
-		//customOpt := util.Options{
-		//	Name: name,
-		//	Seed: 1,
-		//	Misc: misc,
-		//}
-		//message := util.AddParticipants(tourneyID, customOpt)
+		customOpt := util.Options{
+			Name: name,
+			Seed: 1,
+			Misc: discordUser,
+		}
+		message := util.AddParticipants(tourneyID, customOpt)
 		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
-				Content: "TEST JOIN",
+				Content: message,
 				Flags:   discordgo.MessageFlagsEphemeral,
 			},
 		})

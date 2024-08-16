@@ -12,3 +12,16 @@ func RoleCheck(i *discordgo.InteractionCreate) bool {
 	}
 	return result
 }
+
+func SendRoleCheckMessage(s *discordgo.Session, i *discordgo.InteractionCreate) error {
+	if !RoleCheck(i) {
+		cmd := &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseChannelMessageWithSource,
+			Data: &discordgo.InteractionResponseData{
+				Content: "You do not have permission to use this command!",
+			},
+		}
+		return s.InteractionRespond(i.Interaction, cmd)
+	}
+	return nil
+}

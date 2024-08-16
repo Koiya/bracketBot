@@ -111,6 +111,93 @@ var (
 				},
 			},
 		},
+		{
+			Name:        "remove",
+			Description: "Remove a tourney/participant",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Name:        "tournament",
+					Description: "Remove a tournament",
+					Options: []*discordgo.ApplicationCommandOption{
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "tourney-id",
+							Description: "Input the tournament id that you want to delete",
+							Required:    true,
+						},
+					},
+					Type: discordgo.ApplicationCommandOptionSubCommand,
+				},
+				{
+					Name:        "participant",
+					Description: "Insert a participant in a tournament",
+					Type:        discordgo.ApplicationCommandOptionSubCommand,
+				},
+			},
+		},
+		{
+			Name:        "update",
+			Description: "update a tourney/participant",
+			Options: []*discordgo.ApplicationCommandOption{
+				{
+					Name:        "tournamentstate",
+					Description: "update a tournament",
+					Options: []*discordgo.ApplicationCommandOption{
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "tourney-id",
+							Description: "Input the tournament id that you want to delete",
+							Required:    true,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "states",
+							Description: "State of the tournament",
+							Required:    true,
+							Choices: []*discordgo.ApplicationCommandOptionChoice{
+								{
+									Name:  "Process Checkin",
+									Value: "process_checkin",
+								},
+								{
+									Name:  "Start Group Stage",
+									Value: "start_group_stage",
+								},
+								{
+									Name:  "Finalize Group Stage",
+									Value: "finalize_group_stage",
+								},
+								{
+									Name:  "Reset Group Stage",
+									Value: "reset_group_stage",
+								},
+								{
+									Name:  "Start",
+									Value: "start",
+								},
+								{
+									Name:  "Finalize",
+									Value: "finalize",
+								},
+								{
+									Name:  "Reset",
+									Value: "reset",
+								},
+								{
+									Name:  "Open Predictions",
+									Value: "open_predictions",
+								},
+							}},
+					},
+					Type: discordgo.ApplicationCommandOptionSubCommand,
+				},
+				{
+					Name:        "participant",
+					Description: "Insert a participant in a tournament",
+					Type:        discordgo.ApplicationCommandOptionSubCommand,
+				},
+			},
+		},
 		//Tournaments
 		{
 			Name:        "showalltournaments",
@@ -128,11 +215,6 @@ var (
 				},
 			},
 		},
-		//{
-		//	Name:        "updatetournament",
-		//	Description: "Updates a tournament with options passed",
-		//},
-
 		//Match
 		{
 			Name:        "showmatch",
@@ -423,6 +505,64 @@ var (
 			}
 
 		},
+		"remove": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+			options := i.ApplicationCommandData().Options
+
+			// As you can see, names of subcommands (nested, top-level)
+			// and subcommand groups are provided through the arguments.
+			switch options[0].Name {
+			case "tournament":
+				if err := cmd.RemoveTournament(s, i); err != nil {
+					s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+						Type: discordgo.InteractionResponseChannelMessageWithSource,
+						Data: &discordgo.InteractionResponseData{
+							Content: "Error occurred when using command. Please try again later.",
+						},
+					})
+					fmt.Println(err)
+				}
+			case "participant":
+				s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+					Type: discordgo.InteractionResponseChannelMessageWithSource,
+					Data: &discordgo.InteractionResponseData{
+						Content: "TEST",
+					},
+				})
+			}
+
+		},
+		"update": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+			options := i.ApplicationCommandData().Options
+			switch options[0].Name {
+			case "tournament":
+				if err := cmd.UpdateTournament(s, i); err != nil {
+					s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+						Type: discordgo.InteractionResponseChannelMessageWithSource,
+						Data: &discordgo.InteractionResponseData{
+							Content: "Error occurred when using command. Please try again later.",
+						},
+					})
+					fmt.Println(err)
+				}
+			case "tournamentstate":
+				if err := cmd.UpdateTournamentState(s, i); err != nil {
+					s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+						Type: discordgo.InteractionResponseChannelMessageWithSource,
+						Data: &discordgo.InteractionResponseData{
+							Content: "Error occurred when using command. Please try again later.",
+						},
+					})
+					fmt.Println(err)
+				}
+			case "participant":
+				s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+					Type: discordgo.InteractionResponseChannelMessageWithSource,
+					Data: &discordgo.InteractionResponseData{
+						Content: "TEST",
+					},
+				})
+			}
+		},
 		"showalltournaments": cmd.ShowAllTournamentsCMD(),
 		"showtournament":     cmd.ShowTournamentCMD(),
 		"showparticipants":   cmd.ShowAllParticipantsCMD(),
@@ -486,14 +626,6 @@ func main() {
 	<-c
 	if *RemoveCommands {
 		log.Println("Removing commands...")
-		// // We need to fetch the commands, since deleting requires the command ID.
-		// // We are doing this from the returned commands on line 375, because using
-		// // this will delete all the commands, which might not be desirable, so we
-		// // are deleting only the commands that we added.
-		// registeredCommands, err := s.ApplicationCommands(s.State.User.ID, *GuildID)
-		// if err != nil {
-		// 	log.Fatalf("Could not fetch registered commands: %v", err)
-		// }
 		for _, v := range registeredCommands {
 			err := s.ApplicationCommandDelete(s.State.User.ID, GuildID, v.ID)
 			if err != nil {

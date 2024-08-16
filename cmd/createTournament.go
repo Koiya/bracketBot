@@ -23,15 +23,9 @@ func generateRandomString(length int) string {
 	return string(result)
 }
 func CreateTournamentCMD(s *discordgo.Session, i *discordgo.InteractionCreate) error {
-	if !util.RoleCheck(i) {
-		cmd := &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Content: "You do not have permission to use this command!",
-			},
-		}
-		return s.InteractionRespond(i.Interaction, cmd)
-	}
+	//Check if user has permissions if not it'll return a different message.
+	util.SendRoleCheckMessage(s, i)
+
 	//Gets the params from the command
 	options := i.ApplicationCommandData().Options
 	opt := options[0].Options
@@ -134,19 +128,21 @@ func CreateTournamentCMD(s *discordgo.Session, i *discordgo.InteractionCreate) e
 
 	resp, err := client.Do(req)
 	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
+
+	//replace _ to body for debugging
+	_, err = io.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println("response Body:", string(body))
+	//fmt.Println("response Body:", string(body))
 
 	if resp.StatusCode != 201 {
 		fmt.Println(resp.StatusCode)
 		cmd := &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
-				Content: "Error response. Please check logs.",
+				Content: "An error occurred. Please try again.",
 			},
 		}
 		return s.InteractionRespond(i.Interaction, cmd)
@@ -169,6 +165,20 @@ func CreateTournamentCMD(s *discordgo.Session, i *discordgo.InteractionCreate) e
 							Name:   "Start time",
 							Value:  startTime,
 							Inline: true,
+						},
+					},
+				},
+			},
+			Components: []discordgo.MessageComponent{
+				discordgo.ActionsRow{
+					Components: []discordgo.MessageComponent{
+						discordgo.Button{
+							Emoji: &discordgo.ComponentEmoji{
+								Name: "🔗",
+							},
+							Label: "URL",
+							Style: discordgo.LinkButton,
+							URL:   "https://challonge.com/" + randomString,
 						},
 					},
 				},
