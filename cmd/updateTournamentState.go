@@ -11,14 +11,6 @@ import (
 	"net/http"
 )
 
-type errorWrapper struct {
-	Errors []errorDetail `json:"errors"`
-}
-
-type errorDetail struct {
-	Detail string `json:"detail"`
-}
-
 func UpdateTournamentState(s *discordgo.Session, i *discordgo.InteractionCreate) error {
 	util.SendRoleCheckMessage(s, i)
 
@@ -62,7 +54,7 @@ func UpdateTournamentState(s *discordgo.Session, i *discordgo.InteractionCreate)
 	fmt.Println("response Body:", string(body))
 
 	if resp.StatusCode != 200 {
-		var errorData errorWrapper
+		var errorData util.ErrorWrapper
 		err = json.Unmarshal(body, &errorData)
 		//fmt.Println(resp.StatusCode)
 		//fmt.Println(errorData)

@@ -55,7 +55,7 @@ func RollCallCMD() func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 								},
 								Label:    "Close",
 								Style:    discordgo.DangerButton,
-								CustomID: "rc_leave",
+								CustomID: "rc_close",
 							},
 							discordgo.Button{
 								Emoji: &discordgo.ComponentEmoji{
@@ -106,6 +106,25 @@ func RCJoinComponent() func(s *discordgo.Session, i *discordgo.InteractionCreate
 			Data: &discordgo.InteractionResponseData{
 				Content: message,
 				Flags:   discordgo.MessageFlagsEphemeral,
+			},
+		})
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+	}
+	return cmd
+}
+func RCCloseComponent() func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+	cmd := func(s *discordgo.Session, i *discordgo.InteractionCreate) {
+		err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			Type: discordgo.InteractionResponseUpdateMessage,
+			Data: &discordgo.InteractionResponseData{
+				Embeds: []*discordgo.MessageEmbed{
+					{
+						Title:       "This rollcall has been closed",
+						Description: "CLOSED",
+					},
+				},
 			},
 		})
 		if err != nil {

@@ -29,7 +29,8 @@ type PointsByParticipant struct {
 
 func FetchAllMatches(tourneyID string) [4]string {
 	var results [4]string
-	var participantsName [2]int
+	var getName [4]string
+	var participantsName [2]string
 	//Request to the API
 	var URL string
 	URL = fmt.Sprintf("https://api.challonge.com/v2.1/tournaments/%v/matches.json", tourneyID)
@@ -63,11 +64,12 @@ func FetchAllMatches(tourneyID string) [4]string {
 	}
 	for _, v := range data.Data {
 		for i, v := range v.Attributes.PointsByParticipant {
-			participantsName[i] = v.ParticipantID
+			getName = FetchParticipant(tourneyID, strconv.Itoa(v.ParticipantID))
+			participantsName[i] = getName[0]
 		}
-		results[0] += strconv.Itoa(participantsName[0]) + "\n\n\n"
+		results[0] += participantsName[0] + "\n" + v.Id + "\n\n"
 		results[1] += v.Attributes.Scores + "\n\n\n"
-		results[2] += strconv.Itoa(participantsName[1]) + "\n\n\n"
+		results[2] += participantsName[1] + "\n\n\n"
 	}
 	fmt.Println(data.Data)
 

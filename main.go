@@ -205,6 +205,36 @@ var (
 							Description: "Input the tournament id that you want to delete",
 							Required:    true,
 						},
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "name",
+							Description: "Name of the tournament",
+							Required:    false,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "tournament_type",
+							Description: "Single Elimination, Double Elimination, Round Robin, Swiss, Free for all",
+							Required:    false,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "game_name",
+							Description: "Name of the game",
+							Required:    false,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionString,
+							Name:        "start_time",
+							Description: "Input date and time",
+							Required:    false,
+						},
+						{
+							Type:        discordgo.ApplicationCommandOptionInteger,
+							Name:        "check_in",
+							Description: "Check in window",
+							Required:    false,
+						},
 					},
 				},
 				{
@@ -293,18 +323,6 @@ var (
 							Type:        discordgo.ApplicationCommandOptionString,
 							Name:        "discord_user",
 							Description: "Discord username of the participant",
-							Required:    false,
-						},
-						{
-							Type:        discordgo.ApplicationCommandOptionString,
-							Name:        "email",
-							Description: "Email of the participant",
-							Required:    false,
-						},
-						{
-							Type:        discordgo.ApplicationCommandOptionString,
-							Name:        "username",
-							Description: "Challonge username of the participant",
 							Required:    false,
 						},
 					},
@@ -591,7 +609,7 @@ var (
 					fmt.Println(err)
 				}
 			case "match":
-				if err := cmd.UpdateParticipantCMD(s, i); err != nil {
+				if err := cmd.UpdateMatchCMD(s, i); err != nil {
 					s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 						Type: discordgo.InteractionResponseChannelMessageWithSource,
 						Data: &discordgo.InteractionResponseData{
@@ -674,7 +692,8 @@ var (
 		"rollcall": cmd.RollCallCMD(),
 	}
 	componentsHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
-		"rc_join": cmd.RCJoinComponent(),
+		"rc_join":  cmd.RCJoinComponent(),
+		"rc_close": cmd.RCCloseComponent(),
 	}
 )
 

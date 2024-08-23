@@ -3,24 +3,20 @@ package cmd
 import (
 	"bracketBot/util"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
 func UpdateTournament(s *discordgo.Session, i *discordgo.InteractionCreate) error {
-	if !util.RoleCheck(i) {
-		cmd := &discordgo.InteractionResponse{
-			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{
-				Content: "You do not have permission to use this command!",
-			},
-		}
-		return s.InteractionRespond(i.Interaction, cmd)
-	}
+	//Check if user has permissions if not it'll return a different message.
+	util.SendRoleCheckMessage(s, i)
+
 	//Gets the params from the command
 	options := i.ApplicationCommandData().Options
 	opt := options[0].Options
@@ -29,11 +25,54 @@ func UpdateTournament(s *discordgo.Session, i *discordgo.InteractionCreate) erro
 	for _, o := range opt {
 		optionMap[o.Name] = o
 	}
+
 	var tourneyID = optionMap["tourney-id"].StringValue()
-	var name = optionMap["name"].StringValue()
-	var gameName = optionMap["game_name"].StringValue()
-	var tournamentType = strings.ToLower(optionMap["tournament_type"].StringValue())
-	var startTime = optionMap["start_time"].StringValue()
+	var tourneyInfo = util.FetchATournament(tourneyID)
+	var name string
+	var gameName string
+	var tournamentType string
+	var startTime string
+	var checkIn int
+	fmt.Println(tourneyInfo)
+
+	if opt, ok := optionMap["name"]; ok {
+		name = opt.StringValue()
+	} else {
+		name = tourneyInfo[0]
+	}
+
+	if opt, ok := optionMap["game_name"]; ok {
+		gameName = opt.StringValue()
+	} else {
+		gameName = tourneyInfo[1]
+	}
+
+	if opt, ok := optionMap["tournament_type"]; ok {
+		tournamentType = strings.ToLower(opt.StringValue())
+	} else {
+		tournamentType = tourneyInfo[2]
+	}
+
+	if opt, ok := optionMap["start_time"]; ok {
+		startTime = opt.StringValue()
+	} else {
+		startTime = tourneyInfo[5]
+	}
+	fmt.Println(name, gameName, tournamentType, startTime)
+	if opt, ok := optionMap["check_in"]; ok {
+		checkIn = int(opt.IntValue())
+		if checkIn < 14 {
+			cmd := &discordgo.InteractionResponse{
+				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Data: &discordgo.InteractionResponseData{
+					Content: "Check in time must be at least 15 minutes",
+				},
+			}
+			return s.InteractionRespond(i.Interaction, cmd)
+		}
+	} else {
+		checkIn, _ = strconv.Atoi(tourneyInfo[6])
+	}
 
 	//Request to the API
 
@@ -42,12 +81,13 @@ func UpdateTournament(s *discordgo.Session, i *discordgo.InteractionCreate) erro
 		  "data": {
 			"type": "Tournaments",
 			"attributes": {
-			  "name": "%v",
-			  "tournament_type": "%v",
-			  "game_name": "%v" ,
+			  "name" : "%v",
+			  "game_name" : "%v",
+			  "url" : "%v",
+              "tournament_type" : "%v",
 			  "private": "true",
-			  "starts_at": "%v",
 			  "description": "",
+			  "start_at": "%v",
 			  "notifications": {
 				"upon_matches_open": true,
 				"upon_tournament_ends": true
@@ -59,7 +99,7 @@ func UpdateTournament(s *discordgo.Session, i *discordgo.InteractionCreate) erro
 			  "registration_options": {
 				"open_signup": false,
 				"signup_cap": 5,
-				"check_in_duration": 15
+				"check_in_duration" : %d
 			  },
 			  "seeding_options": {
 				"hide_seeds": false,
@@ -107,11 +147,11 @@ func UpdateTournament(s *discordgo.Session, i *discordgo.InteractionCreate) erro
 			}
 		  }
 		}
-		`, name, tournamentType, gameName, startTime)
+		`, name, gameName, tourneyID, tournamentType, startTime, checkIn)
 	var URL string
 	URL = fmt.Sprintf("https://api.challonge.com/v2.1/tournaments/%v.json", tourneyID)
 	client := &http.Client{}
-	req, err := http.NewRequest("POST", URL, bytes.NewBuffer([]byte(requestBody)))
+	req, err := http.NewRequest("PUT", URL, bytes.NewBuffer([]byte(requestBody)))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -131,12 +171,17 @@ func UpdateTournament(s *discordgo.Session, i *discordgo.InteractionCreate) erro
 
 	fmt.Println("response Body:", string(body))
 
-	if resp.StatusCode != 201 {
+	if resp.StatusCode != 200 {
 		fmt.Println(resp.StatusCode)
+		var errorData util.ErrorWrapper
+		err = json.Unmarshal(body, &errorData)
+		//fmt.Println(resp.StatusCode)
+		//fmt.Println(errorData)
+		errDetail := errorData.Errors[0].Detail
 		cmd := &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
-				Content: "An error occurred. Please try again.",
+				Content: fmt.Sprintf("Error: %v", errDetail),
 			},
 		}
 		return s.InteractionRespond(i.Interaction, cmd)

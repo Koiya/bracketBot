@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type TournamentWrapper struct {
@@ -15,15 +16,21 @@ type TournamentInfo struct {
 	Attributes TournamentAttributes `json:"attributes"`
 }
 type TournamentAttributes struct {
-	Name           string `json:"name"`
-	Game           string `json:"game_name"`
-	TournamentType string `json:"tournament_type"`
-	URL            string `json:"full_challonge_url"`
-	ImageURL       string `json:"live_image_url"`
+	Name           string     `json:"name"`
+	Game           string     `json:"game_name"`
+	TournamentType string     `json:"tournament_type"`
+	URL            string     `json:"full_challonge_url"`
+	ImageURL       string     `json:"live_image_url"`
+	StartAt        string     `json:"start_at"`
+	RegOptions     RegOptions `json:"registration_options"`
 }
 
-func FetchATournament(tourneyID string) [5]string {
-	var results [5]string
+type RegOptions struct {
+	CheckIn int `json:"check_in_duration"`
+}
+
+func FetchATournament(tourneyID string) [7]string {
+	var results [7]string
 	//Request to the API
 	var URL string
 	URL = fmt.Sprintf("https://api.challonge.com/v2.1/tournaments/%v.json", tourneyID)
@@ -61,5 +68,7 @@ func FetchATournament(tourneyID string) [5]string {
 	results[2] += data.Data.Attributes.TournamentType
 	results[3] += data.Data.Attributes.URL
 	results[4] += data.Data.Attributes.ImageURL
+	results[5] += data.Data.Attributes.StartAt
+	results[6] += strconv.Itoa(data.Data.Attributes.RegOptions.CheckIn)
 	return results
 }
