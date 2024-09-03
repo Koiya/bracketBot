@@ -6,9 +6,9 @@
 ````
 TODO:
 UPDATE README
+Code cleanup
 Implement bracket image 
 List functionality for tournament with a bunch of matches
-Rolecall still WIP
 Allow admin to set certain role to certain commands
 need more ideas
 ````

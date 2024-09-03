@@ -19,6 +19,7 @@ func SendRoleCheckMessage(s *discordgo.Session, i *discordgo.InteractionCreate) 
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: "You do not have permission to use this command!",
+				Flags:   discordgo.MessageFlagsEphemeral,
 			},
 		}
 		return s.InteractionRespond(i.Interaction, cmd)

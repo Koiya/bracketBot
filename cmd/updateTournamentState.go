@@ -63,6 +63,7 @@ func UpdateTournamentState(s *discordgo.Session, i *discordgo.InteractionCreate)
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("Error: %v", errDetail),
+				Flags:   discordgo.MessageFlagsEphemeral,
 			},
 		}
 		return s.InteractionRespond(i.Interaction, cmd)

@@ -29,46 +29,6 @@ func init() {
 
 var (
 	commands = []*discordgo.ApplicationCommand{
-		{
-			Name: "ping",
-			// All commands and options must have a description
-			// Commands/options without description will fail the registration
-			// of the command.
-			Description: "Ping pong.",
-		},
-
-		//revise all the commands to use this format ex: update participant/tournament/match, show all (participant/tournament/match)
-		{
-			Name:        "subcommands",
-			Description: "Subcommands and command groups example",
-			Options: []*discordgo.ApplicationCommandOption{
-				{
-					Name:        "subcommand-group",
-					Description: "Subcommands group",
-					Options: []*discordgo.ApplicationCommandOption{
-						{
-							Name:        "nested-subcommand",
-							Description: "Nested subcommand",
-							Type:        discordgo.ApplicationCommandOptionSubCommand,
-							Options: []*discordgo.ApplicationCommandOption{
-								{
-									Type:        discordgo.ApplicationCommandOptionString,
-									Name:        "tourney-id",
-									Description: "Input ID of the tournament",
-									Required:    true,
-								},
-							},
-						},
-					},
-					Type: discordgo.ApplicationCommandOptionSubCommandGroup,
-				},
-				{
-					Name:        "subcommand",
-					Description: "Top-level subcommand",
-					Type:        discordgo.ApplicationCommandOptionSubCommand,
-				},
-			},
-		},
 		//CREATE COMMANDS
 		{
 			Name:        "create",
@@ -90,6 +50,28 @@ var (
 							Name:        "tournament_type",
 							Description: "Single Elimination, Double Elimination, Round Robin, Swiss, Free for all",
 							Required:    true,
+							Choices: []*discordgo.ApplicationCommandOptionChoice{
+								{
+									Name:  "Single Elimination",
+									Value: "single elimination",
+								},
+								{
+									Name:  "Double Elimination",
+									Value: "double elimination",
+								},
+								{
+									Name:  "Round Robin",
+									Value: "round robin",
+								},
+								{
+									Name:  "Swiss",
+									Value: "swiss",
+								},
+								{
+									Name:  "Free for all",
+									Value: "free for all",
+								},
+							},
 						},
 						{
 							Type:        discordgo.ApplicationCommandOptionString,
@@ -132,18 +114,6 @@ var (
 							Type:        discordgo.ApplicationCommandOptionInteger,
 							Name:        "seed",
 							Description: "Seeding of the participant",
-							Required:    false,
-						},
-						{
-							Type:        discordgo.ApplicationCommandOptionString,
-							Name:        "email",
-							Description: "Email of the participant",
-							Required:    false,
-						},
-						{
-							Type:        discordgo.ApplicationCommandOptionString,
-							Name:        "username",
-							Description: "Challonge username of the participant",
 							Required:    false,
 						},
 					},
@@ -216,6 +186,28 @@ var (
 							Name:        "tournament_type",
 							Description: "Single Elimination, Double Elimination, Round Robin, Swiss, Free for all",
 							Required:    false,
+							Choices: []*discordgo.ApplicationCommandOptionChoice{
+								{
+									Name:  "Single Elimination",
+									Value: "single elimination",
+								},
+								{
+									Name:  "Double Elimination",
+									Value: "double elimination",
+								},
+								{
+									Name:  "Round Robin",
+									Value: "round robin",
+								},
+								{
+									Name:  "Swiss",
+									Value: "swiss",
+								},
+								{
+									Name:  "Free for all",
+									Value: "free for all",
+								},
+							},
 						},
 						{
 							Type:        discordgo.ApplicationCommandOptionString,
@@ -391,6 +383,26 @@ var (
 									Description: "Input ID of the tournament",
 									Required:    true,
 								},
+								{
+									Type:        discordgo.ApplicationCommandOptionString,
+									Name:        "states",
+									Description: "Check all open or pending state of the matches",
+									Required:    true,
+									Choices: []*discordgo.ApplicationCommandOptionChoice{
+										{
+											Name:  "Open",
+											Value: "open",
+										},
+										{
+											Name:  "Pending",
+											Value: "pending",
+										},
+										{
+											Name:  "Completed",
+											Value: "complete",
+										},
+									},
+								},
 							},
 						},
 						{
@@ -477,50 +489,6 @@ var (
 		},
 	}
 	commandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
-		"ping": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-			var message string
-			if len(i.Member.Roles) == 0 {
-				message = "No roles!"
-			}
-			for _, value := range i.Member.Roles {
-				message += value + " "
-			}
-			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-				Type: discordgo.InteractionResponseChannelMessageWithSource,
-				Data: &discordgo.InteractionResponseData{
-					Content: message,
-				},
-			})
-		},
-		//TEMPLATE
-		"subcommands": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
-			options := i.ApplicationCommandData().Options
-			content := ""
-
-			// As you can see, names of subcommands (nested, top-level)
-			// and subcommand groups are provided through the arguments.
-			switch options[0].Name {
-			case "subcommand":
-				content = "The top-level subcommand is executed. Now try to execute the nested one."
-			case "subcommand-group":
-				options = options[0].Options
-				fmt.Println(options)
-				switch options[0].Name {
-				case "nested-subcommand":
-					content = "Nice, now you know how to execute nested commands too"
-				default:
-					content = "Oops, something went wrong.\n" +
-						"Hol' up, you aren't supposed to see this message."
-				}
-			}
-
-			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
-				Type: discordgo.InteractionResponseChannelMessageWithSource,
-				Data: &discordgo.InteractionResponseData{
-					Content: content,
-				},
-			})
-		},
 		//CREATE HANDLER
 		"create": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			options := i.ApplicationCommandData().Options

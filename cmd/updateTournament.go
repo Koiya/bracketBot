@@ -25,7 +25,6 @@ func UpdateTournament(s *discordgo.Session, i *discordgo.InteractionCreate) erro
 	for _, o := range opt {
 		optionMap[o.Name] = o
 	}
-
 	var tourneyID = optionMap["tourney-id"].StringValue()
 	var tourneyInfo = util.FetchATournament(tourneyID)
 	var name string
@@ -173,15 +172,15 @@ func UpdateTournament(s *discordgo.Session, i *discordgo.InteractionCreate) erro
 
 	if resp.StatusCode != 200 {
 		fmt.Println(resp.StatusCode)
-		var errorData util.ErrorWrapper
+		var errorData util.ErrorWrapperArray
 		err = json.Unmarshal(body, &errorData)
-		//fmt.Println(resp.StatusCode)
-		//fmt.Println(errorData)
-		errDetail := errorData.Errors[0].Detail
+		//fmt.Println(resp.StatusCode
+		errDetail := errorData.Errors[0].Detail[0]
 		cmd := &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: fmt.Sprintf("Error: %v", errDetail),
+				Flags:   discordgo.MessageFlagsEphemeral,
 			},
 		}
 		return s.InteractionRespond(i.Interaction, cmd)

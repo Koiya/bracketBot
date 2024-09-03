@@ -35,7 +35,7 @@ func UpdateParticipantCMD(s *discordgo.Session, i *discordgo.InteractionCreate) 
 	//if opt, ok := optionMap["username"]; ok {
 	//	username = opt.StringValue()
 	//}
-	if opt, ok := optionMap["discord-user"]; ok {
+	if opt, ok := optionMap["discord_user"]; ok {
 		discordUser = opt.StringValue()
 	}
 	customOpt := util.Options{

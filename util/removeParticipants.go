@@ -30,13 +30,13 @@ func RemoveParticipants(tourneyID, name string) string {
 	resp, err := client.Do(req)
 	defer resp.Body.Close()
 
-	_, err = io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	if resp.StatusCode != 204 {
+	if resp.StatusCode != 204 || resp.StatusCode != 200 {
 		fmt.Println(resp.StatusCode)
+		fmt.Println(string(body))
 		return "Error trying to remove a participant"
 	}
 

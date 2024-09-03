@@ -27,7 +27,7 @@ type MatchAttributes struct {
 
 func FetchMatch(tourneyID, matchID string) [4]string {
 	var results [4]string
-	var participantsName [2]int
+	var participantsName [2]string
 	//Request to the API
 	var URL string
 	URL = fmt.Sprintf("https://api.challonge.com/v2.1/tournaments/%v/matches/%v.json", tourneyID, matchID)
@@ -60,11 +60,12 @@ func FetchMatch(tourneyID, matchID string) [4]string {
 		return results
 	}
 	for i, v := range data.Data.Attributes.PointsByParticipant {
-		participantsName[i] = v.ParticipantID
+		getName := FetchParticipant(tourneyID, strconv.Itoa(v.ParticipantID))
+		participantsName[i] = getName[0]
 	}
-	results[0] += strconv.Itoa(participantsName[0])
+	results[0] += participantsName[0]
 	results[1] += data.Data.Attributes.Scores
-	results[2] += strconv.Itoa(participantsName[1])
+	results[2] += participantsName[1]
 	fmt.Println(data.Data)
 
 	return results

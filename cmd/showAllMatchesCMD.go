@@ -15,9 +15,10 @@ func ShowAllMatchesCMD(s *discordgo.Session, i *discordgo.InteractionCreate) err
 		optionMap[opt.Name] = opt
 	}
 	var tourneyID = optionMap["tourney-id"].StringValue()
+	var state = optionMap["states"].StringValue()
 	tourneyData := util.FetchATournament(tourneyID)
 	tourneyName := tourneyData[0]
-	data := util.FetchAllMatches(tourneyID)
+	data := util.FetchAllMatches(tourneyID, state)
 	pOne := data[0]
 	score := data[1]
 	pTwo := data[2]

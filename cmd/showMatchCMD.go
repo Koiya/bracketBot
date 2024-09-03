@@ -17,6 +17,7 @@ func ShowMatchCMD(s *discordgo.Session, i *discordgo.InteractionCreate) error {
 	var matchID = optionMap["match-id"].StringValue()
 	var tourneyID = optionMap["tourney-id"].StringValue()
 	tourneyData := util.FetchATournament(tourneyID)
+
 	name := tourneyData[0]
 	data := util.FetchMatch(tourneyID, matchID)
 	pOne := data[0]

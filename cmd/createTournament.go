@@ -9,7 +9,6 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -36,7 +35,7 @@ func CreateTournamentCMD(s *discordgo.Session, i *discordgo.InteractionCreate) e
 	}
 	var name = optionMap["name"].StringValue()
 	var gameName = optionMap["game_name"].StringValue()
-	var tournamentType = strings.ToLower(optionMap["tournament_type"].StringValue())
+	var tournamentType = optionMap["tournament_type"].StringValue()
 	var startTime = optionMap["start_time"].StringValue()
 
 	randomString := generateRandomString(9)
@@ -90,7 +89,7 @@ func CreateTournamentCMD(s *discordgo.Session, i *discordgo.InteractionCreate) e
 			  },
 			  "double_elimination_options": {
 				"split_participants": false,
-				"grand_finals_modifier": ""
+				"grand_finals_modifier": "single match"
 			  },
 			  "round_robin_options": {
 				"iterations": 2,
@@ -130,12 +129,12 @@ func CreateTournamentCMD(s *discordgo.Session, i *discordgo.InteractionCreate) e
 	defer resp.Body.Close()
 
 	//replace _ to body for debugging
-	_, err = io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	//fmt.Println("response Body:", string(body))
+	fmt.Println("response Body:", string(body))
 
 	if resp.StatusCode != 201 {
 		fmt.Println(resp.StatusCode)
@@ -143,8 +142,10 @@ func CreateTournamentCMD(s *discordgo.Session, i *discordgo.InteractionCreate) e
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: "An error occurred. Please try again.",
+				Flags:   discordgo.MessageFlagsEphemeral,
 			},
 		}
+		fmt.Println(resp)
 		return s.InteractionRespond(i.Interaction, cmd)
 	}
 

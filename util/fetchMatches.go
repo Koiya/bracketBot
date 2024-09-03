@@ -27,13 +27,13 @@ type PointsByParticipant struct {
 	ParticipantID int `json:"participant_id"`
 }
 
-func FetchAllMatches(tourneyID string) [4]string {
+func FetchAllMatches(tourneyID, state string) [4]string {
 	var results [4]string
 	var getName [4]string
 	var participantsName [2]string
 	//Request to the API
 	var URL string
-	URL = fmt.Sprintf("https://api.challonge.com/v2.1/tournaments/%v/matches.json", tourneyID)
+	URL = fmt.Sprintf("https://api.challonge.com/v2.1/tournaments/%v/matches.json?state=%v", tourneyID, state)
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", URL, nil)
 	if err != nil {
