@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"io"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -60,7 +59,7 @@ func UpdateTournament(s *discordgo.Session, i *discordgo.InteractionCreate) erro
 	fmt.Println(name, gameName, tournamentType, startTime)
 	if opt, ok := optionMap["check_in"]; ok {
 		checkIn = int(opt.IntValue())
-		if checkIn < 14 {
+		if checkIn <= 14 {
 			cmd := &discordgo.InteractionResponse{
 				Type: discordgo.InteractionResponseChannelMessageWithSource,
 				Data: &discordgo.InteractionResponseData{
@@ -71,6 +70,9 @@ func UpdateTournament(s *discordgo.Session, i *discordgo.InteractionCreate) erro
 		}
 	} else {
 		checkIn, _ = strconv.Atoi(tourneyInfo[6])
+		if checkIn <= 14 {
+			checkIn = 15
+		}
 	}
 
 	//Request to the API
@@ -84,64 +86,9 @@ func UpdateTournament(s *discordgo.Session, i *discordgo.InteractionCreate) erro
 			  "game_name" : "%v",
 			  "url" : "%v",
               "tournament_type" : "%v",
-			  "private": "true",
-			  "description": "",
 			  "start_at": "%v",
-			  "notifications": {
-				"upon_matches_open": true,
-				"upon_tournament_ends": true
-			  },
-			  "match_options": {
-				"consolation_matches_target_rank": 3,
-				"accept_attachments": false
-			  },
 			  "registration_options": {
-				"open_signup": false,
-				"signup_cap": 5,
 				"check_in_duration" : %d
-			  },
-			  "seeding_options": {
-				"hide_seeds": false,
-				"sequential_pairings": false
-			  },
-			  "station_options": {
-				"auto_assign": false,
-				"only_start_matches_with_assigned_stations": false
-			  },
-			  "group_stage_enabled": false,
-			  "group_stage_options": {
-				"stage_type": "round robin",
-				"group_size": 4,
-				"participant_count_to_advance_per_group": 2,
-				"rr_iterations": 1,
-				"ranked_by": "match wins",
-				"rr_pts_for_match_win": 1,
-				"rr_pts_for_match_tie": 0.5,
-				"rr_pts_for_game_win": 0,
-				"rr_pts_for_game_tie": 0,
-				"split_participants": false
-			  },
-			  "double_elimination_options": {
-				"split_participants": false,
-				"grand_finals_modifier": ""
-			  },
-			  "round_robin_options": {
-				"iterations": 2,
-				"ranking": "match wins",
-				"pts_for_game_win": 1,
-				"pts_for_game_tie": 0,
-				"pts_for_match_win": 1,
-				"pts_for_match_tie": 0.5
-			  },
-			  "swiss_options": {
-				"rounds": 2,
-				"pts_for_game_win": 1,
-				"pts_for_game_tie": 0,
-				"pts_for_match_win": 1,
-				"pts_for_match_tie": 0.5
-			  },
-			  "free_for_all_options": {
-				"max_participants": 4
 			  }
 			}
 		  }
@@ -152,7 +99,7 @@ func UpdateTournament(s *discordgo.Session, i *discordgo.InteractionCreate) erro
 	client := &http.Client{}
 	req, err := http.NewRequest("PUT", URL, bytes.NewBuffer([]byte(requestBody)))
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/vnd.api+json")
@@ -165,7 +112,7 @@ func UpdateTournament(s *discordgo.Session, i *discordgo.InteractionCreate) erro
 	//replace _ to body for debugging
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 
 	fmt.Println("response Body:", string(body))

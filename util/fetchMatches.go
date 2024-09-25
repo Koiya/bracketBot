@@ -59,7 +59,7 @@ func FetchAllMatches(tourneyID, state string) [4]string {
 
 	if resp.StatusCode != 200 {
 		fmt.Println(resp.StatusCode)
-		results[0] = "Error getting data"
+		results[0] = ""
 		return results
 	}
 	for _, v := range data.Data {

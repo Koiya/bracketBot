@@ -8,7 +8,7 @@ TODO:
 UPDATE README
 Code cleanup
 Implement bracket image 
-List functionality for tournament with a bunch of matches
+Better list for matches
 Allow admin to set certain role to certain commands
 need more ideas
 ````
@@ -16,7 +16,7 @@ need more ideas
 ### SETUP:
 Create a role and get the ID of the discord role that you want be able to access certain commands\
 Create a config.toml file with this format \
-You can get Challonge API key from here : https://challonge.com/settings/developer
+You can get Challonge API v1 key from here : https://challonge.com/settings/developer
 ````
 [Bot]
 token  = {discord bot token goes here}
@@ -30,29 +30,45 @@ Put config.toml in root directory where the bot folder is located\
 After setting up config file, you can just run ``go run main.go``
 
 ### Commands:
+
+```
+/create tournament {name} {tournament_type} {game_name} {start_time}
+- Create a tournament
+```
+![img_3.png](img_3.png)
+
+```
+/update tournament {tourney-id} {name} {tournament_type} {game_name} {start_time} {check_in}
+- Update a tournment with options
+```
+![img_4.png](img_4.png)
+
 ````
-/showalltournaments 
+/show all tournaments 
 - Shows all tournaments
 ````
-![img.png](img.png)
+![img_5.png](img_5.png)
 ````
-/showtournament {tourney-id} 
+/show tournament {tourney-id} 
 - Shows information of the tournament with given ID
 ````
-![img_1.png](img_1.png)
 
 ````
-/showparticipants {tourney-id} 
+/show all participant {tourney-id} 
 - Shows all participant in that tournament with given ID
 ````
-![img_2.png](img_2.png)
 
 ````
-/addparticipant {tourney-id} {name} optionals : {seed} {misc} {username} {email} 
+/show participant {participant-id} {tourney-id} 
+- Show a participant information in that tournament with given IDs
+````
+![img_1.png](img_1.png)
+````
+/create participant {tourney-id} {name} {discorduser} optionals : {seed}
 - Add a participant with those parameters
 - Requires role to be set in config.toml to use this command
 ````
-
+![img.png](img.png)
 
 ````
 /removeparticipant {tourney-id} {name} 

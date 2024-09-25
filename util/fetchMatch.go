@@ -56,7 +56,7 @@ func FetchMatch(tourneyID, matchID string) [4]string {
 
 	if resp.StatusCode != 200 {
 		fmt.Println(resp.StatusCode)
-		results[0] = "Error getting data"
+		results[0] = ""
 		return results
 	}
 	for i, v := range data.Data.Attributes.PointsByParticipant {
