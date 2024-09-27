@@ -671,7 +671,7 @@ func init() {
 func main() {
 	var RemoveCommands = flag.Bool("rmcmd", true, "Remove all commands after shutdowning or not")
 	s.AddHandler(func(s *discordgo.Session, r *discordgo.Ready) {
-		log.Printf("Logged in as: %v#%v  GuildID: %v", s.State.User.Username, s.State.User.Discriminator, GuildID)
+		log.Printf("BracketBot 1.0 \n Logged in as: %v#%v  GuildID: %v", s.State.User.Username, s.State.User.Discriminator, GuildID)
 	})
 	s.AddHandler(func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		switch i.Type {
