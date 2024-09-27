@@ -23,3 +23,19 @@ jobs:
 
     - name: Build
       run: go build -v ./...
+  
+  deploy:
+    runs-on: self-hosted
+    needs: build
+    if: github.ref == 'refs/heads/master'
+    steps:
+    - name: Deploying repo to server
+      uses: appleboy/ssh-action@master
+      with:
+        script:
+          cd ../bot/bracketBot
+          git fetch
+          git pull
+          go build
+          sudo systemctl restart golangapp
+          sudo systemctl status golangapp
