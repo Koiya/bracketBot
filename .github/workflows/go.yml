@@ -32,7 +32,7 @@ jobs:
     - name: Deploying repo to server
       run: |
         cd ../../../../../bot/bracketBot |
-        git pull |
+        git pull origin/master |
         go build main.go |
         sudo systemctl restart golangapp |
         sudo systemctl status golangapp
