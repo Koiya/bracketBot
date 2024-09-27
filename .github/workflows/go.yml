@@ -31,9 +31,9 @@ jobs:
     steps:
     - name: Deploying repo to server
       run:
-        cd ../bot/bracketBot
-        git fetch
-        git pull
-        go build main.go
-        sudo systemctl restart golangapp
+        cd ../bot/bracketBot,
+        git fetch,
+        git pull,
+        go build main.go,
+        sudo systemctl restart golangapp,
         sudo systemctl status golangapp
