@@ -31,7 +31,8 @@ jobs:
     steps:
     - name: Deploying repo to server
       run: |
-        cd ../bot/bracketBot |
+        cd |
+        cd /bot/bracketBot |
         git fetch |
         git pull |
         go build main.go |
