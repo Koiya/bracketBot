@@ -43,6 +43,18 @@ After setting up config file, you can just run ``go run main.go``
 ```
 ![img_4.png](img_4.png)
 
+
+
+```
+/update tournamentstate {tourney-id} {state}
+- Update a tournament state
+```
+
+```
+/rollcall {tourney-id}
+- Prompts a embed message and let user join a tourney with a click of a button
+```
+
 ````
 /show all tournaments 
 - Shows all tournaments
@@ -71,30 +83,30 @@ After setting up config file, you can just run ``go run main.go``
 ![img.png](img.png)
 
 ````
-/removeparticipant {tourney-id} {name} 
+/remove participant {tourney-id} {name} 
 - Removes a participants from tournament
 - Requires role to be set in config.toml to use this command
 ````
 
 
 ````
-/updateparticipant {tourney-id} {name} {options}
+/update participant {tourney-id} {name} {options}
 - Updates a participant information in a tournament
 - Requires role to be set in config.toml to use this command
 ````
 
 ````
-/showmatch {match-id} {tourney-id}
+/show match {match-id} {tourney-id}
 - Shows a single match from a tournament
 ````
 
 ````
-/showmatches {tourney-id}
+/show all match {tourney-id}
 - Shows all matches from a tournament
 ````
 
 ````
-/updatematch {match-id} {tourney-id} {options}
+/update match {match-id} {tourney-id} {options}
 - Update a match with options
 ````
 
